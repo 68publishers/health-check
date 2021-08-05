@@ -87,7 +87,7 @@ extensions:
 Now you can run this command:
 
 ```bash
-$ bin/console heatl-check [<services>] [--full]
+$ bin/console health-check [<services>] [--full]
 ```
 
 An array argument `services` represents the names of services for a check. The argument is optional so all services are checked when the argument is omitted.
@@ -154,7 +154,7 @@ final class HealthCheckPresenter extends AbstractHealthCheckPresenter
 {
     protected function getArrayExportMode() : string
     {
-        # your can resolve an export mode in this method, use following constants:
+        # you can resolve an export mode in this method, use following constants:
 
         # 1) HealthCheckerInterface::ARRAY_EXPORT_MODEL_SIMPLE
         # 2) HealthCheckerInterface::ARRAY_EXPORT_MODE_FULL
