@@ -15,7 +15,7 @@
 	},
 	"require-dev": {
 		"ext-redis": "*",
-		"friendsofphp/php-cs-fixer": "^2.0",
+		"friendsofphp/php-cs-fixer": "^2.19",
 		"nette/application": "^3.0.6",
 		"nette/di": "^3.0.3",
 		"nette/http": "^3.0.0",
@@ -47,7 +47,7 @@
 	},
 	"scripts": {
 		"php-cs-fixer": [
-			"vendor/bin/php-cs-fixer fix --config=.php_cs.dist -v"
+			"vendor/bin/php-cs-fixer fix -v"
 		],
 		"tests": [
 			"@tests:lowest",
