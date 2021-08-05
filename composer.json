@@ -1,0 +1,64 @@
+{
+	"name": "68publishers/health-check",
+	"description": "Check the status of an application services.",
+	"keywords": ["68publishers", "health", "check", "health-check", "nette"],
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Tomáš Glawaty",
+			"email": "tomasglawaty@icloud.com"
+		}
+	],
+	"require": {
+		"php": "^7.4",
+		"ext-json": "*"
+	},
+	"require-dev": {
+		"friendsofphp/php-cs-fixer": "^2.0",
+		"nette/application": "^3.0.6",
+		"nette/di": "^3.0.3",
+		"nette/http": "^3.0.0",
+		"nette/tester": "^2.3.4",
+		"roave/security-advisories": "dev-latest",
+		"symfony/console": "^4.0 | ^5.0"
+	},
+	"suggest": {
+		"nette/di": "For an integration with Nette Framework.",
+		"symfony/console": "If you want to use a console command."
+	},
+	"conflict": {
+		"nette/di": "<3.0",
+		"nette/schema": "<1.1",
+		"symfony/console": "<4.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"SixtyEightPublishers\\HealthCheck\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"SixtyEightPublishers\\HealthCheck\\Tests\\": "tests/"
+		}
+	},
+	"config": {
+		"sort-packages": true
+	},
+	"scripts": {
+		"php-cs-fixer": [
+			"vendor/bin/php-cs-fixer fix --config=.php_cs.dist -v"
+		],
+		"tests": [
+			"@tests:lowest",
+			"@tests:highest"
+		],
+		"tests:lowest" : [
+			"@composer update --no-progress --prefer-dist --prefer-lowest --prefer-stable",
+			"vendor/bin/tester ./tests"
+		],
+		"tests:highest" : [
+			"@composer update --no-progress --prefer-dist --prefer-stable",
+			"vendor/bin/tester ./tests"
+		]
+	}
+}

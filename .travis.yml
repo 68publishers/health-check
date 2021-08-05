@@ -1,0 +1,44 @@
+language: php
+
+php:
+  - 7.4
+
+env:
+  - TESTER_PHP_BIN="php-cgi"
+
+script:
+  - composer run tests
+
+after_failure:
+  - for i in $(find ./tests -name \*.actual); do echo "--- $i"; cat $i; echo; echo; done
+
+jobs:
+  include:
+    -   name: Nette Code Checker
+        install:
+          - travis_retry composer create-project nette/code-checker temp/code-checker ~3.2 --no-progress
+        script:
+          - php temp/code-checker/code-checker --strict-types --short-arrays
+
+    -   name: Php-Cs-Fixer
+        install:
+          - travis_retry composer install --no-progress --prefer-dist
+        script:
+          - vendor/bin/php-cs-fixer fix --config=.php_cs.dist -v --dry-run
+
+    -   stage: Code Coverage
+        install:
+          - travis_retry composer install --no-progress --prefer-dist
+          - travis_retry composer bin all install --no-progress --prefer-dist
+        script:
+          - vendor/bin/tester -p phpdbg tests -s --coverage ./coverage.xml --coverage-src ./src
+        after_script:
+          - wget https://scrutinizer-ci.com/ocular.phar
+          - php ocular.phar code-coverage:upload --format=php-clover coverage.xml
+
+  allow_failures:
+    -   name: Nette Code Checker
+
+cache:
+  directories:
+    - $HOME/.composer/cache
