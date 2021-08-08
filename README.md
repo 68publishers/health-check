@@ -48,6 +48,7 @@ $result = $checker->check(['redis']);
 
 - Database using PDO (`SixtyEightPublishers\HealthCheck\ServiceChecker\PDOServiceChecker`)
 - Redis (`SixtyEightPublishers\HealthCheck\ServiceChecker\RedisServiceChecker`)
+- Http (`SixtyEightPublishers\HealthCheck\ServiceChecker\HttpServiceChecker`)
 
 You can create your own service checker. Just create a class that implements the interface `ServiceCheckerInterface`.
 
