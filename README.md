@@ -13,7 +13,7 @@
 The best way to install `68publishers/health-check` is using Composer:
 
 ```bash
-composer require 68publishers/health-check
+$ composer require 68publishers/health-check
 ```
 
 ## Standalone usage
