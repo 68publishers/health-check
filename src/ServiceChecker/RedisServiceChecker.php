@@ -54,7 +54,7 @@ final class RedisServiceChecker implements ServiceCheckerInterface
 				throw new RedisException(error_get_last());
 			}
 
-			if (NULL !== $this->auth && FALSE === $redis->auth($this->auth)) {
+			if (!empty($this->auth) && FALSE === $redis->auth($this->auth)) {
 				return ServiceResult::createError($this->getName(), 'unauthorized', new HealthCheckException('Failed to auth a connection.'));
 			}
 
