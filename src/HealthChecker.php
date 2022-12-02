@@ -4,26 +4,29 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\HealthCheck;
 
+use InvalidArgumentException;
 use SixtyEightPublishers\HealthCheck\Result\ResultInterface;
 use SixtyEightPublishers\HealthCheck\Result\HealthCheckResult;
-use SixtyEightPublishers\HealthCheck\Exception\InvalidArgumentException;
 use SixtyEightPublishers\HealthCheck\ServiceChecker\ServiceCheckerInterface;
+use function array_keys;
 
 final class HealthChecker implements HealthCheckerInterface
 {
-	/** @var \SixtyEightPublishers\HealthCheck\ServiceChecker\ServiceCheckerInterface[]  */
+	/** @var array<ServiceCheckerInterface> */
 	private array $serviceCheckers = [];
 
-	/**
-	 * {@inheritDoc}
-	 */
+	public function __construct(
+		private readonly ExportModeResolverInterface $exportModeResolver = new StaticExportModeResolver(ExportMode::Simple),
+	) {
+	}
+
 	public function addServiceChecker(ServiceCheckerInterface $serviceChecker): void
 	{
 		$name = $serviceChecker->getName();
 
 		if (isset($this->serviceCheckers[$name])) {
 			throw new InvalidArgumentException(sprintf(
-				'The service checker with name "%s" is already registered.',
+				'Service checker with the name "%s" is already registered.',
 				$serviceChecker->getName()
 			));
 		}
@@ -31,19 +34,14 @@ final class HealthChecker implements HealthCheckerInterface
 		$this->serviceCheckers[$name] = $serviceChecker;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function check(array $services = [], string $arrayExportMode = self::ARRAY_EXPORT_MODEL_SIMPLE): ResultInterface
+	public function check(?array $servicesOnly = NULL, ?ExportMode $exportMode = NULL): ResultInterface
 	{
 		$result = new HealthCheckResult();
-		$services = empty($services) ? array_keys($this->serviceCheckers) : $services;
+		$servicesOnly = $servicesOnly ?? array_keys($this->serviceCheckers);
 
-		$result->setArrayExportMode($arrayExportMode);
-
-		foreach ($services as $serviceName) {
+		foreach ($servicesOnly as $serviceName) {
 			if (!isset($this->serviceCheckers[$serviceName])) {
-				throw new InvalidArgumentException(sprintf(
+				throw new InvalidArgumentException(\sprintf(
 					'Checker for the service named "%s" id not defined.',
 					$serviceName
 				));
@@ -52,6 +50,6 @@ final class HealthChecker implements HealthCheckerInterface
 			$result = $result->withResult($this->serviceCheckers[$serviceName]->check());
 		}
 
-		return $result;
+		return $result->withExportMode($exportMode ?? $this->exportModeResolver->resolve());
 	}
 }

@@ -1,0 +1,13 @@
+extensions:
+	health_check: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckExtension
+
+health_check:
+	service_checkers:
+		- SixtyEightPublishers\HealthCheck\Tests\Fixtures\HealthyServiceChecker('first')
+		- SixtyEightPublishers\HealthCheck\Tests\Fixtures\HealthyServiceChecker('second')
+		- @third_service_checker
+
+services:
+	third_service_checker:
+		autowired: no
+		factory: SixtyEightPublishers\HealthCheck\Tests\Fixtures\HealthyServiceChecker('third')

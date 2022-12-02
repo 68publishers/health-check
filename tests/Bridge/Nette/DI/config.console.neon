@@ -1,0 +1,6 @@
+includes:
+	- consoleApplication.neon
+
+extensions:
+	health_check: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckExtension
+	health_check.console: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckConsoleExtension

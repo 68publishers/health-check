@@ -1,0 +1,6 @@
+application:
+	catchExceptions: yes
+
+services:
+	router: Nette\Application\Routers\RouteList
+	http.response: SixtyEightPublishers\HealthCheck\Tests\Bridge\Nette\DI\HttpResponseMock

@@ -1,0 +1,2 @@
+extensions:
+	health_check.console: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckConsoleExtension

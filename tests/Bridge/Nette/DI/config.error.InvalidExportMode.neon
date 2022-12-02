@@ -1,0 +1,5 @@
+extensions:
+	health_check: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckExtension
+
+health_check:
+	export_mode: invalid

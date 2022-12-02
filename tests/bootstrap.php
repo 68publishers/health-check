@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
+use Tester\Environment;
+
 if (@!include __DIR__ . '/../vendor/autoload.php') {
-	echo 'Please run `composer install`';
+	echo 'Install Nette Tester using `composer install`';
 	exit(1);
 }
 
-Tester\Environment::setup();
-
-if (!defined('TEMP_PATH')) {
-	define('TEMP_PATH', __DIR__ . '/temp');
-}
+Environment::setup();
+Environment::bypassFinals();
+date_default_timezone_set('Europe/Prague');

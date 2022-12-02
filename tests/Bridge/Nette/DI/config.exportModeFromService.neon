@@ -1,0 +1,8 @@
+extensions:
+	health_check: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckExtension
+
+health_check:
+	export_mode: @export_mode_resolver
+
+services:
+	export_mode_resolver: SixtyEightPublishers\HealthCheck\Tests\Fixtures\FullExportModeResolver

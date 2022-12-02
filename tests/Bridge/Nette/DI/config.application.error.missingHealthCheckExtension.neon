@@ -1,0 +1,5 @@
+includes:
+	- base.application.neon
+
+extensions:
+	health_check.application: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckApplicationExtension

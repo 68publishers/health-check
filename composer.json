@@ -10,27 +10,31 @@
 		}
 	],
 	"require": {
-		"php": "^7.4",
+		"php": "^8.1",
 		"ext-json": "*"
 	},
 	"require-dev": {
+		"ext-pdo": "*",
 		"ext-redis": "*",
-		"friendsofphp/php-cs-fixer": "^2.19",
-		"nette/application": "^3.0.6",
-		"nette/di": "^3.0.3",
-		"nette/http": "^3.0.0",
-		"nette/tester": "^2.3.4",
+		"friendsofphp/php-cs-fixer": "^3.13",
+		"mockery/mockery": "^1.5",
+		"nette/application": "^3.1.0",
+		"nette/bootstrap": "^3.1",
+		"nette/di": "^3.0.6",
+		"nette/tester": "^2.4.3",
+		"phpstan/phpstan": "^1.9",
+		"phpstan/phpstan-nette": "^1.1",
 		"roave/security-advisories": "dev-latest",
-		"symfony/console": "^4.0 | ^5.0"
+		"symfony/console": "^5.4 || ^6.0"
 	},
 	"suggest": {
 		"nette/di": "For an integration with Nette Framework.",
 		"symfony/console": "If you want to use a console command."
 	},
 	"conflict": {
-		"nette/di": "<3.0",
+		"nette/di": "<3.0.6",
 		"nette/schema": "<1.1",
-		"symfony/console": "<4.0"
+		"symfony/console": "<5.4"
 	},
 	"autoload": {
 		"psr-4": {
@@ -44,22 +48,5 @@
 	},
 	"config": {
 		"sort-packages": true
-	},
-	"scripts": {
-		"php-cs-fixer": [
-			"vendor/bin/php-cs-fixer fix -v"
-		],
-		"tests": [
-			"@tests:lowest",
-			"@tests:highest"
-		],
-		"tests:lowest" : [
-			"@composer update --no-progress --prefer-dist --prefer-lowest --prefer-stable",
-			"vendor/bin/tester ./tests"
-		],
-		"tests:highest" : [
-			"@composer update --no-progress --prefer-dist --prefer-stable",
-			"vendor/bin/tester ./tests"
-		]
 	}
 }

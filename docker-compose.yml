@@ -1,0 +1,56 @@
+version: "3.7"
+
+services:
+    php81:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: php81
+        container_name: 68publishers.health-check.81
+        volumes:
+            - .:/var/www/html:cached
+        networks:
+            - package
+
+    php82:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: php82
+        container_name: 68publishers.health-check.82
+        volumes:
+            - .:/var/www/html:cached
+        networks:
+            - package
+
+    # tested services
+    redis:
+        image: redis:7.0.5-alpine
+        container_name: 68publishers.health-check.redis
+        ports:
+            - 6379:6379
+        networks:
+            - package
+
+    postgres:
+        image: postgres:14.6
+        container_name: 68publishers.health-check.postgres
+        ports:
+            - 5432:5432
+        environment:
+            - PGDATA=/var/lib/postgresql/data/pgdata
+            - POSTGRES_USER=root
+            - POSTGRES_PASSWORD=root
+            - POSTGRES_DB=68publishers.health-check
+        command: postgres
+        networks:
+            - package
+
+    http-service:
+        image: strm/helloworld-http
+        container_name: 68publishers.health-check.http-service
+        networks:
+            - package
+
+networks:
+  package:

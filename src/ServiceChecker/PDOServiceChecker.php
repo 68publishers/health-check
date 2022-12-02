@@ -6,44 +6,27 @@ namespace SixtyEightPublishers\HealthCheck\ServiceChecker;
 
 use PDO;
 use PDOException;
+use InvalidArgumentException;
 use SixtyEightPublishers\HealthCheck\Result\ServiceResult;
 use SixtyEightPublishers\HealthCheck\Result\ResultInterface;
 use SixtyEightPublishers\HealthCheck\Exception\HealthCheckException;
-use SixtyEightPublishers\HealthCheck\Exception\InvalidArgumentException;
 
 final class PDOServiceChecker implements ServiceCheckerInterface
 {
-	private string $dsn;
-
-	private ?string $user;
-
-	private ?string $password;
-
-	private array $options;
-
-	private string $serviceName;
-
 	/**
-	 * @param string      $dsn
-	 * @param string|NULL $user
-	 * @param string|NULL $password
-	 * @param array       $options
-	 * @param string      $serviceName
+	 * @param array<string, mixed> $options
 	 */
-	public function __construct(string $dsn, ?string $user = NULL, ?string $password = NULL, array $options = [], string $serviceName = 'database')
-	{
-		$this->dsn = $dsn;
-		$this->user = $user;
-		$this->password = $password;
-		$this->options = $options;
-		$this->serviceName = $serviceName;
+	public function __construct(
+		private readonly string $dsn,
+		private readonly ?string $user = NULL,
+		private readonly ?string $password = NULL,
+		private readonly array $options = [],
+		private readonly string $serviceName = 'database',
+	) {
 	}
 
 	/**
-	 * @param array $params
-	 *
-	 * @return \SixtyEightPublishers\HealthCheck\ServiceChecker\PDOServiceChecker
-	 * @throws \SixtyEightPublishers\HealthCheck\Exception\InvalidArgumentException
+	 * @param array{driver: ?string, host: ?string, port: null|int|string, dbname: ?string, user?: ?string, password?: ?string, options?: ?array<string, mixed>} $params
 	 */
 	public static function fromParams(array $params): self
 	{
@@ -56,33 +39,37 @@ final class PDOServiceChecker implements ServiceCheckerInterface
 			}
 		}
 
-		return new self(sprintf(
-			'%s:host=%s;port=%s;dbname=%s;',
-			$params['driver'],
-			$params['host'],
-			$params['port'],
-			$params['dbname']
-		), $params['user'] ?? NULL, $params['password'] ?? NULL, $params['options'] ?? []);
+		return new self(
+			\sprintf(
+				'%s:host=%s;port=%s;dbname=%s;',
+				$params['driver'],
+				$params['host'],
+				$params['port'],
+				$params['dbname']
+			),
+			$params['user'] ?? NULL,
+			$params['password'] ?? NULL,
+			$params['options'] ?? []
+		);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getName(): string
 	{
 		return $this->serviceName;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function check(): ResultInterface
 	{
 		try {
 			$pdo = new PDO($this->dsn, $this->user, $this->password, $this->options);
 
 			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$pdo->query('SELECT 1;')->execute();
+
+			$statement = $pdo->query('SELECT 1;');
+
+			if (FALSE !== $statement) {
+				$statement->execute();
+			}
 
 			return ServiceResult::createOk($this->getName());
 		} catch (PDOException $e) {
