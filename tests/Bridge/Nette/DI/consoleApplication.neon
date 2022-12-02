@@ -1,0 +1,5 @@
+services:
+	-
+		type: Symfony\Component\Console\Application
+		setup:
+			- addCommands(typed(Symfony\Component\Console\Command\Command))

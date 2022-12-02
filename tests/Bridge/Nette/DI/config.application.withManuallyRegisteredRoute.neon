@@ -1,0 +1,20 @@
+includes:
+	- base.application.neon
+
+extensions:
+	health_check: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckExtension
+	health_check.application: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckApplicationExtension
+
+health_check:
+	export_mode: full
+	service_checkers:
+		- SixtyEightPublishers\HealthCheck\Tests\Fixtures\HealthyServiceChecker('first')
+		- SixtyEightPublishers\HealthCheck\Tests\Fixtures\HealthyServiceChecker('second')
+
+health_check.application:
+	route: false
+
+services:
+	router:
+		setup:
+			- add(SixtyEightPublishers\HealthCheck\Bridge\Nette\Application\HealthCheckRoute())

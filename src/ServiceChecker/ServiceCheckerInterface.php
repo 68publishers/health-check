@@ -8,13 +8,7 @@ use SixtyEightPublishers\HealthCheck\Result\ResultInterface;
 
 interface ServiceCheckerInterface
 {
-	/**
-	 * @return string
-	 */
 	public function getName(): string;
 
-	/**
-	 * @return \SixtyEightPublishers\HealthCheck\Result\ResultInterface
-	 */
 	public function check(): ResultInterface;
 }

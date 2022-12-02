@@ -8,38 +8,26 @@ use Throwable;
 use SixtyEightPublishers\HealthCheck\Result\ServiceResult;
 use SixtyEightPublishers\HealthCheck\Result\ResultInterface;
 use SixtyEightPublishers\HealthCheck\Exception\HealthCheckException;
+use function sprintf;
+use function get_class;
+use function preg_match;
+use function get_headers;
+use function stream_context_create;
 
 final class HttpServiceChecker implements ServiceCheckerInterface
 {
-	private string $serviceName;
-
-	private string $url;
-
-	private int $timeout;
-
-	/**
-	 * @param string $serviceName
-	 * @param string $url
-	 * @param int    $timeout
-	 */
-	public function __construct(string $serviceName, string $url, int $timeout = 5)
-	{
-		$this->serviceName = $serviceName;
-		$this->url = $url;
-		$this->timeout = $timeout;
+	public function __construct(
+		private readonly string $serviceName,
+		private readonly string $url,
+		private readonly int $timeout = 5,
+	) {
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getName(): string
 	{
 		return $this->serviceName;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function check(): ResultInterface
 	{
 		try {
@@ -50,28 +38,29 @@ final class HttpServiceChecker implements ServiceCheckerInterface
 					'timeout' => $this->timeout,
 				],
 			]);
-			$headers = @get_headers($this->url, 0, $context);
+			$headers = @get_headers($this->url, FALSE, $context);
 
 			if (FALSE === $headers) {
-				return $this->serviceIsDown('Can\'t fetch response.');
+				return $this->serviceIsDown('Can\'t fetch a response.');
 			}
 
-			if (isset($headers[0]) && FALSE !== (bool) preg_match('~^HTTP\/[\d]\.[\d] 200 OK~', $headers[0])) {
+			if (isset($headers[0]) && FALSE !== (bool) preg_match('~^HTTP/\d\.\d 200 OK~', $headers[0])) {
 				return ServiceResult::createOk($this->getName());
 			}
 
-			return $this->serviceIsDown(sprintf('Server respond with status header %s', $headers[0] ?? '[unknown]'));
+			return $this->serviceIsDown(sprintf(
+				'Server respond with the status header %s',
+				$headers[0] ?? '[unknown]'
+			));
 		} catch (Throwable $e) {
-			return $this->serviceIsDown(sprintf('[%s] %s', get_class($e), $e->getMessage()), $e);
+			return $this->serviceIsDown(sprintf(
+				'[%s] %s',
+				get_class($e),
+				$e->getMessage()
+			), $e);
 		}
 	}
 
-	/**
-	 * @param string          $message
-	 * @param \Throwable|NULL $previous
-	 *
-	 * @return \SixtyEightPublishers\HealthCheck\Result\ResultInterface
-	 */
 	private function serviceIsDown(string $message, ?Throwable $previous = NULL): ResultInterface
 	{
 		return ServiceResult::createError(

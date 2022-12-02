@@ -4,21 +4,18 @@ declare(strict_types=1);
 
 namespace SixtyEightPublishers\HealthCheck\Bridge\Nette\DI;
 
+use RuntimeException;
 use Nette\DI\CompilerExtension;
-use SixtyEightPublishers\HealthCheck\Exception\RuntimeException;
-use SixtyEightPublishers\HealthCheck\Bridge\Symfony\Console\HealthCheckCommand;
+use SixtyEightPublishers\HealthCheck\Bridge\Symfony\Console\Command\HealthCheckCommand;
+use function sprintf;
 
 final class HealthCheckConsoleExtension extends CompilerExtension
 {
-	/**
-	 * {@inheritDoc}
-	 */
 	public function loadConfiguration(): void
 	{
 		if (0 >= count($this->compiler->getExtensions(HealthCheckExtension::class))) {
 			throw new RuntimeException(sprintf(
-				'The extension %s can be used only with %s.',
-				static::class,
+				'Please register the compiler extension of type %s.',
 				HealthCheckExtension::class
 			));
 		}

@@ -1,0 +1,2 @@
+extensions:
+	health_check: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckExtension
