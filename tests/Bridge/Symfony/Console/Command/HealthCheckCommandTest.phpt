@@ -22,22 +22,22 @@ final class HealthCheckCommandTest extends TestCase
 {
 	public function testSuccessfulResult(): void
 	{
-		$this->assertRunWithSuccessfulResult(NULL, NULL);
+		$this->assertRunWithSuccessfulResult(null, null);
 	}
 
 	public function testSuccessfulResultWithServicesOnlyArgument(): void
 	{
-		$this->assertRunWithSuccessfulResult(['first service'], NULL);
+		$this->assertRunWithSuccessfulResult(['first service'], null);
 	}
 
 	public function testSuccessfulResultWithExportModeOption(): void
 	{
-		$this->assertRunWithSuccessfulResult(NULL, ExportMode::Full);
+		$this->assertRunWithSuccessfulResult(null, ExportMode::Full);
 	}
 
 	public function testFailedResultWithoutServiceCheckers(): void
 	{
-		$this->assertRunWithFailedResult([], 'Services are unhealthy.', NULL, NULL);
+		$this->assertRunWithFailedResult([], 'Services are unhealthy.', null, null);
 	}
 
 	public function testSingleFailedResult(): void
@@ -47,17 +47,17 @@ final class HealthCheckCommandTest extends TestCase
 
 		$firstServiceResult->shouldReceive('isOk')
 			->once()
-			->andReturn(TRUE);
+			->andReturn(true);
 
 		$secondServiceResult->shouldReceive('isOk')
 			->once()
-			->andReturn(FALSE);
+			->andReturn(false);
 
 		$secondServiceResult->shouldReceive('getName')
 			->once()
 			->andReturn('second service');
 
-		$this->assertRunWithFailedResult([$firstServiceResult, $secondServiceResult], 'Service "second service" is unhealthy.', NULL, NULL);
+		$this->assertRunWithFailedResult([$firstServiceResult, $secondServiceResult], 'Service "second service" is unhealthy.', null, null);
 	}
 
 	public function testMultipleFailedResult(): void
@@ -67,7 +67,7 @@ final class HealthCheckCommandTest extends TestCase
 
 		$firstServiceResult->shouldReceive('isOk')
 			->once()
-			->andReturn(FALSE);
+			->andReturn(false);
 
 		$firstServiceResult->shouldReceive('getName')
 			->once()
@@ -75,13 +75,13 @@ final class HealthCheckCommandTest extends TestCase
 
 		$secondServiceResult->shouldReceive('isOk')
 			->once()
-			->andReturn(FALSE);
+			->andReturn(false);
 
 		$secondServiceResult->shouldReceive('getName')
 			->once()
 			->andReturn('second service');
 
-		$this->assertRunWithFailedResult([$firstServiceResult, $secondServiceResult], 'Services "first service", "second service" are unhealthy.', NULL, NULL);
+		$this->assertRunWithFailedResult([$firstServiceResult, $secondServiceResult], 'Services "first service", "second service" are unhealthy.', null, null);
 	}
 
 	public function testFailedResultWithServicesOnlyArgument(): void
@@ -90,13 +90,13 @@ final class HealthCheckCommandTest extends TestCase
 
 		$serviceResult->shouldReceive('isOk')
 			->once()
-			->andReturn(FALSE);
+			->andReturn(false);
 
 		$serviceResult->shouldReceive('getName')
 			->once()
 			->andReturn('second service');
 
-		$this->assertRunWithFailedResult([$serviceResult], 'Service "second service" is unhealthy.', ['second service'], NULL);
+		$this->assertRunWithFailedResult([$serviceResult], 'Service "second service" is unhealthy.', ['second service'], null);
 	}
 
 	public function testFailedResultWithExportModeOption(): void
@@ -105,13 +105,13 @@ final class HealthCheckCommandTest extends TestCase
 
 		$serviceResult->shouldReceive('isOk')
 			->once()
-			->andReturn(FALSE);
+			->andReturn(false);
 
 		$serviceResult->shouldReceive('getName')
 			->once()
 			->andReturn('second service');
 
-		$this->assertRunWithFailedResult([$serviceResult], 'Service "second service" is unhealthy.', NULL, ExportMode::Full);
+		$this->assertRunWithFailedResult([$serviceResult], 'Service "second service" is unhealthy.', null, ExportMode::Full);
 	}
 
 	protected function tearDown(): void
@@ -126,11 +126,11 @@ final class HealthCheckCommandTest extends TestCase
 
 		$result->shouldReceive('isOk')
 			->once()
-			->andReturn(TRUE);
+			->andReturn(true);
 
 		$result->shouldReceive('jsonSerialize')
 			->once()
-			->andReturn(['status' => 'ok', 'is_ok' => TRUE]);
+			->andReturn(['status' => 'ok', 'is_ok' => true]);
 
 		$checker->shouldReceive('check')
 			->once()
@@ -159,11 +159,11 @@ JSON;
 
 		$result->shouldReceive('isOk')
 			->once()
-			->andReturn(FALSE);
+			->andReturn(false);
 
 		$result->shouldReceive('jsonSerialize')
 			->once()
-			->andReturn(['status' => 'failed', 'is_ok' => FALSE]);
+			->andReturn(['status' => 'failed', 'is_ok' => false]);
 
 		$result->shouldReceive('getResults')
 			->once()
@@ -198,11 +198,11 @@ JSON;
 		$tester = new CommandTester($command);
 		$input = [];
 
-		if (NULL !== $servicesOnly) {
+		if (null !== $servicesOnly) {
 			$input['services'] = $servicesOnly;
 		}
 
-		if (NULL !== $exportMode) {
+		if (null !== $exportMode) {
 			$input['--export-mode'] = $exportMode->value;
 		}
 

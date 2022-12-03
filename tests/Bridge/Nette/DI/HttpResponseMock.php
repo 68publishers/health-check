@@ -12,7 +12,7 @@ final class HttpResponseMock implements IResponse
 
 	private array $headers = [];
 
-	public function setCode(int $code, ?string $reason = NULL): self
+	public function setCode(int $code, ?string $reason = null): self
 	{
 		$this->code = $code;
 
@@ -38,7 +38,7 @@ final class HttpResponseMock implements IResponse
 		return $this;
 	}
 
-	public function setContentType(string $type, ?string $charset = NULL): self
+	public function setContentType(string $type, ?string $charset = null): self
 	{
 		return $this;
 	}
@@ -54,12 +54,12 @@ final class HttpResponseMock implements IResponse
 
 	public function isSent(): bool
 	{
-		return FALSE;
+		return false;
 	}
 
 	public function getHeader(string $header): ?string
 	{
-		return isset($this->headers[$header]) ? $this->headers[$header][0] : NULL;
+		return isset($this->headers[$header]) ? $this->headers[$header][0] : null;
 	}
 
 	public function getHeaders(): array
@@ -67,12 +67,12 @@ final class HttpResponseMock implements IResponse
 		return $this->headers;
 	}
 
-	public function setCookie(string $name, string $value, $expire, ?string $path = NULL, ?string $domain = NULL, ?bool $secure = NULL, ?bool $httpOnly = NULL): self
+	public function setCookie(string $name, string $value, $expire, ?string $path = null, ?string $domain = null, ?bool $secure = null, ?bool $httpOnly = null): self
 	{
 		return $this;
 	}
 
-	public function deleteCookie(string $name, ?string $path = NULL, ?string $domain = NULL, ?bool $secure = NULL): void
+	public function deleteCookie(string $name, ?string $path = null, ?string $domain = null, ?bool $secure = null): void
 	{
 	}
 }

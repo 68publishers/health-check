@@ -19,7 +19,7 @@ final class RedisServiceChecker implements ServiceCheckerInterface
 	public function __construct(
 		private readonly string $host = '127.0.0.1',
 		private readonly int|string $port = 6379,
-		private readonly string|array|NULL $auth = NULL,
+		private readonly string|array|null $auth = null,
 		private readonly string $serviceName = 'redis',
 	) {
 	}
@@ -34,15 +34,15 @@ final class RedisServiceChecker implements ServiceCheckerInterface
 		try {
 			$redis = new Redis();
 
-			if (FALSE === @$redis->connect($this->host, (int) $this->port)) {
+			if (false === @$redis->connect($this->host, (int) $this->port)) {
 				$lastError = error_get_last();
 
-				throw new RedisException(NULL !== $lastError ? $lastError['message'] : 'Can\'t connect to redis, unknown error.');
+				throw new RedisException(null !== $lastError ? $lastError['message'] : 'Can\'t connect to redis, unknown error.');
 			}
 
 			$authResult = $this->doAuth($redis);
 
-			if (NULL !== $authResult) {
+			if (null !== $authResult) {
 				return $authResult;
 			}
 
@@ -57,18 +57,18 @@ final class RedisServiceChecker implements ServiceCheckerInterface
 
 	private function doAuth(Redis $redis): ?ResultInterface
 	{
-		if (NULL === $this->auth) {
-			return NULL;
+		if (null === $this->auth) {
+			return null;
 		}
 
 		try {
 			$authorized = $redis->auth($this->auth);
 		} catch (RedisException $e) {
-			$authorized = FALSE;
+			$authorized = false;
 		}
 
 		return $authorized
-			? NULL
-			: ServiceResult::createError($this->getName(), 'unauthorized', new HealthCheckException('Failed to auth a connection.', 0, $e ?? NULL));
+			? null
+			: ServiceResult::createError($this->getName(), 'unauthorized', new HealthCheckException('Failed to auth a connection.', 0, $e ?? null));
 	}
 }

@@ -63,11 +63,11 @@ final class HealthCheckResult implements ResultInterface
 	{
 		foreach ($this->results as $result) {
 			if (!$result->isOk()) {
-				return FALSE;
+				return false;
 			}
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	public function getStatus(): string
@@ -85,7 +85,7 @@ final class HealthCheckResult implements ResultInterface
 	{
 		$results = array_filter($this->results, static fn (ResultInterface $result): bool => !$result->isOk());
 
-		return empty($results) ? NULL : new MultipleResultsException($results);
+		return empty($results) ? null : new MultipleResultsException($results);
 	}
 
 	/**

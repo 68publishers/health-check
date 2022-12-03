@@ -175,7 +175,7 @@ final class HealthCheckerTest extends TestCase
 	public function testDefaultExportModeShouldBeOverloadedByMethodArgument(): void
 	{
 		$checker = new HealthChecker();
-		$healthCheckResult = $checker->check(NULL, ExportMode::Full);
+		$healthCheckResult = $checker->check(null, ExportMode::Full);
 
 		Assert::type(HealthCheckResult::class, $healthCheckResult);
 		assert($healthCheckResult instanceof HealthCheckResult);

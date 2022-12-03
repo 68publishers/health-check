@@ -12,18 +12,18 @@ final class ServiceResult implements ResultInterface
 		private readonly string $serviceName,
 		private readonly bool $ok,
 		private readonly string $status,
-		private readonly ?HealthCheckExceptionInterface $error = NULL,
+		private readonly ?HealthCheckExceptionInterface $error = null,
 	) {
 	}
 
 	public static function createOk(string $serviceName, string $status = 'running'): self
 	{
-		return new self($serviceName, TRUE, $status);
+		return new self($serviceName, true, $status);
 	}
 
 	public static function createError(string $serviceName, string $status, HealthCheckExceptionInterface $error): self
 	{
-		return new self($serviceName, FALSE, $status, $error);
+		return new self($serviceName, false, $status, $error);
 	}
 
 	public function getName(): string

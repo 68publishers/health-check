@@ -26,7 +26,7 @@ final class MultipleResultsException extends HealthCheckException
 				static fn (ResultInterface $result): string => sprintf(
 					'[%s]: %s',
 					$result->getName(),
-					NULL !== $result->getError() ? $result->getError()->getMessage() : '?'
+					null !== $result->getError() ? $result->getError()->getMessage() : '?'
 				),
 				$this->results
 			)

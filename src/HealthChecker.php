@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use SixtyEightPublishers\HealthCheck\Result\ResultInterface;
 use SixtyEightPublishers\HealthCheck\Result\HealthCheckResult;
 use SixtyEightPublishers\HealthCheck\ServiceChecker\ServiceCheckerInterface;
+use function sprintf;
 use function array_keys;
 
 final class HealthChecker implements HealthCheckerInterface
@@ -34,14 +35,14 @@ final class HealthChecker implements HealthCheckerInterface
 		$this->serviceCheckers[$name] = $serviceChecker;
 	}
 
-	public function check(?array $servicesOnly = NULL, ?ExportMode $exportMode = NULL): ResultInterface
+	public function check(?array $servicesOnly = null, ?ExportMode $exportMode = null): ResultInterface
 	{
 		$result = new HealthCheckResult();
 		$servicesOnly = $servicesOnly ?? array_keys($this->serviceCheckers);
 
 		foreach ($servicesOnly as $serviceName) {
 			if (!isset($this->serviceCheckers[$serviceName])) {
-				throw new InvalidArgumentException(\sprintf(
+				throw new InvalidArgumentException(sprintf(
 					'Checker for the service named "%s" id not defined.',
 					$serviceName
 				));

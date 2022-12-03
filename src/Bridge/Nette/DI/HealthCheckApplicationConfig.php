@@ -6,5 +6,5 @@ namespace SixtyEightPublishers\HealthCheck\Bridge\Nette\DI;
 
 final class HealthCheckApplicationConfig
 {
-	public FALSE|string $route;
+	public false|string $route;
 }

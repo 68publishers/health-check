@@ -21,12 +21,12 @@ final class HealthCheckPresenterTest extends TestCase
 {
 	public function testHealthyResponse(): void
 	{
-		$this->assertResponse(HttpResponse::S200_OK, TRUE);
+		$this->assertResponse(HttpResponse::S200_OK, true);
 	}
 
 	public function testUnhealthyResponse(): void
 	{
-		$this->assertResponse(HttpResponse::S503_ServiceUnavailable, FALSE);
+		$this->assertResponse(HttpResponse::S503_ServiceUnavailable, false);
 	}
 
 	protected function tearDown(): void

@@ -69,11 +69,11 @@ final class HealthCheckResultTest extends TestCase
 
 		$firstServiceResult->shouldReceive('isOk')
 			->once()
-			->andReturn(TRUE);
+			->andReturn(true);
 
 		$secondServiceResult->shouldReceive('isOk')
 			->once()
-			->andReturn(TRUE);
+			->andReturn(true);
 
 		$healthCheckResult = new HealthCheckResult([$firstServiceResult, $secondServiceResult]);
 
@@ -87,11 +87,11 @@ final class HealthCheckResultTest extends TestCase
 
 		$firstServiceResult->shouldReceive('isOk')
 			->once()
-			->andReturn(TRUE);
+			->andReturn(true);
 
 		$secondServiceResult->shouldReceive('isOk')
 			->once()
-			->andReturn(FALSE);
+			->andReturn(false);
 
 		$healthCheckResult = new HealthCheckResult([$firstServiceResult, $secondServiceResult]);
 
@@ -112,11 +112,11 @@ final class HealthCheckResultTest extends TestCase
 
 		$firstServiceResult->shouldReceive('isOk')
 			->once()
-			->andReturn(TRUE);
+			->andReturn(true);
 
 		$secondServiceResult->shouldReceive('isOk')
 			->once()
-			->andReturn(TRUE);
+			->andReturn(true);
 
 		$healthCheckResult = new HealthCheckResult([$firstServiceResult, $secondServiceResult]);
 
@@ -130,11 +130,11 @@ final class HealthCheckResultTest extends TestCase
 
 		$firstServiceResult->shouldReceive('isOk')
 			->once()
-			->andReturn(TRUE);
+			->andReturn(true);
 
 		$secondServiceResult->shouldReceive('isOk')
 			->once()
-			->andReturn(FALSE);
+			->andReturn(false);
 
 		$healthCheckResult = new HealthCheckResult([$firstServiceResult, $secondServiceResult]);
 
@@ -155,11 +155,11 @@ final class HealthCheckResultTest extends TestCase
 
 		$firstServiceResult->shouldReceive('isOk')
 			->once()
-			->andReturn(TRUE);
+			->andReturn(true);
 
 		$secondServiceResult->shouldReceive('isOk')
 			->once()
-			->andReturn(TRUE);
+			->andReturn(true);
 
 		$healthCheckResult = new HealthCheckResult([$firstServiceResult, $secondServiceResult]);
 
@@ -173,11 +173,11 @@ final class HealthCheckResultTest extends TestCase
 
 		$firstServiceResult->shouldReceive('isOk')
 			->once()
-			->andReturn(TRUE);
+			->andReturn(true);
 
 		$secondServiceResult->shouldReceive('isOk')
 			->once()
-			->andReturn(FALSE);
+			->andReturn(false);
 
 		$secondServiceResult->shouldReceive('getName')
 			->andReturn('secondService');
@@ -199,7 +199,7 @@ final class HealthCheckResultTest extends TestCase
 
 		Assert::same([
 			'status' => 'ok',
-			'is_ok' => TRUE,
+			'is_ok' => true,
 		], $emptyHealthCheckResult->toArray());
 	}
 
@@ -209,7 +209,7 @@ final class HealthCheckResultTest extends TestCase
 
 		Assert::same([
 			'status' => 'ok',
-			'is_ok' => TRUE,
+			'is_ok' => true,
 			'services' => [],
 		], $emptyHealthCheckResult->toArray());
 	}
@@ -221,17 +221,17 @@ final class HealthCheckResultTest extends TestCase
 
 		$firstServiceResult->shouldReceive('isOk')
 			->times(2)
-			->andReturn(TRUE);
+			->andReturn(true);
 
 		$secondServiceResult->shouldReceive('isOk')
 			->times(2)
-			->andReturn(FALSE);
+			->andReturn(false);
 
 		$healthCheckResult = new HealthCheckResult([$firstServiceResult, $secondServiceResult]);
 
 		Assert::same([
 			'status' => 'failed',
-			'is_ok' => FALSE,
+			'is_ok' => false,
 		], $healthCheckResult->toArray());
 	}
 
@@ -242,7 +242,7 @@ final class HealthCheckResultTest extends TestCase
 
 		$firstServiceResult->shouldReceive('isOk')
 			->times(2)
-			->andReturn(TRUE);
+			->andReturn(true);
 
 		$firstServiceResult->shouldReceive('toArray')
 			->once()
@@ -250,7 +250,7 @@ final class HealthCheckResultTest extends TestCase
 
 		$secondServiceResult->shouldReceive('isOk')
 			->times(2)
-			->andReturn(TRUE);
+			->andReturn(true);
 
 		$secondServiceResult->shouldReceive('toArray')
 			->once()
@@ -260,7 +260,7 @@ final class HealthCheckResultTest extends TestCase
 
 		Assert::same([
 			'status' => 'ok',
-			'is_ok' => TRUE,
+			'is_ok' => true,
 			'services' => [
 				['name' => 'first service'],
 				['name' => 'second service'],
@@ -289,11 +289,11 @@ final class HealthCheckResultTest extends TestCase
 
 		$firstServiceResult->shouldReceive('isOk')
 			->times(2)
-			->andReturn(TRUE);
+			->andReturn(true);
 
 		$secondServiceResult->shouldReceive('isOk')
 			->times(2)
-			->andReturn(FALSE);
+			->andReturn(false);
 
 		$healthCheckResult = new HealthCheckResult([$firstServiceResult, $secondServiceResult]);
 
@@ -307,7 +307,7 @@ final class HealthCheckResultTest extends TestCase
 
 		$firstServiceResult->shouldReceive('isOk')
 			->times(2)
-			->andReturn(TRUE);
+			->andReturn(true);
 
 		$firstServiceResult->shouldReceive('toArray')
 			->once()
@@ -315,7 +315,7 @@ final class HealthCheckResultTest extends TestCase
 
 		$secondServiceResult->shouldReceive('isOk')
 			->times(2)
-			->andReturn(TRUE);
+			->andReturn(true);
 
 		$secondServiceResult->shouldReceive('toArray')
 			->once()
