@@ -18,7 +18,9 @@ use SixtyEightPublishers\HealthCheck\Result\HealthCheckResult;
 use function count;
 use function implode;
 use function sprintf;
+use function is_array;
 use function array_map;
+use function is_string;
 use function json_encode;
 use function array_filter;
 
@@ -36,7 +38,7 @@ final class HealthCheckCommand extends Command
 	{
 		$this->setDescription('Checks statuses of the application services.')
 			->addArgument('services', InputArgument::OPTIONAL | InputArgument::IS_ARRAY, 'Names of services that will be checked. All services are checked by default.')
-			->addOption('export-mode', NULL, InputOption::VALUE_REQUIRED, 'Overwrite the default export mode. Allowed values are "simple" and "full"');
+			->addOption('export-mode', null, InputOption::VALUE_REQUIRED, 'Overwrite the default export mode. Allowed values are "simple" and "full"');
 	}
 
 	/**
@@ -49,8 +51,8 @@ final class HealthCheckCommand extends Command
 		$exportMode = $input->getOption('export-mode');
 
 		$result = $this->healthChecker->check(
-			is_array($servicesOnly) && !empty($servicesOnly) ? $servicesOnly : NULL,
-			is_string($exportMode) ? ExportMode::from($exportMode) : NULL
+			is_array($servicesOnly) && !empty($servicesOnly) ? $servicesOnly : null,
+			is_string($exportMode) ? ExportMode::from($exportMode) : null
 		);
 
 		$style->writeln(json_encode($result, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));

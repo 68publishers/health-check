@@ -7,6 +7,7 @@ namespace SixtyEightPublishers\HealthCheck\Bridge\Nette\DI;
 use RuntimeException;
 use Nette\DI\CompilerExtension;
 use SixtyEightPublishers\HealthCheck\Bridge\Symfony\Console\Command\HealthCheckCommand;
+use function count;
 use function sprintf;
 
 final class HealthCheckConsoleExtension extends CompilerExtension

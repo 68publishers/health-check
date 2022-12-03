@@ -7,6 +7,7 @@ namespace SixtyEightPublishers\HealthCheck\Tests\Bridge\Nette\DI;
 use Closure;
 use Tester\Assert;
 use Tester\TestCase;
+use Tester\CodeCoverage\Collector;
 use Nette\DI\InvalidConfigurationException;
 use SixtyEightPublishers\HealthCheck\ExportMode;
 use SixtyEightPublishers\HealthCheck\HealthChecker;
@@ -25,7 +26,7 @@ final class HealthCheckExtensionTest extends TestCase
 	{
 		Assert::exception(
 			static function () {
-				ContainerFactory::create(__DIR__ . '/config.error.InvalidExportMode.neon', TRUE);
+				ContainerFactory::create(__DIR__ . '/config.error.InvalidExportMode.neon', true);
 			},
 			InvalidConfigurationException::class,
 			"%A%Invalid export mode, allowed values are 'simple', 'full', 'full_if_debug', dynamic parameter or service reference.%A%"
@@ -36,7 +37,7 @@ final class HealthCheckExtensionTest extends TestCase
 	{
 		$this->assertHealthCheckerService(
 			__DIR__ . '/config.minimal.neon',
-			FALSE,
+			false,
 			StaticExportModeResolver::class,
 			ExportMode::Simple,
 			[]
@@ -47,7 +48,7 @@ final class HealthCheckExtensionTest extends TestCase
 	{
 		$this->assertHealthCheckerService(
 			__DIR__ . '/config.minimal.neon',
-			TRUE,
+			true,
 			StaticExportModeResolver::class,
 			ExportMode::Full,
 			[]
@@ -58,7 +59,7 @@ final class HealthCheckExtensionTest extends TestCase
 	{
 		$this->assertHealthCheckerService(
 			__DIR__ . '/config.exportModeFromParameter.neon',
-			TRUE,
+			true,
 			StaticExportModeResolver::class,
 			ExportMode::Simple,
 			[]
@@ -69,7 +70,7 @@ final class HealthCheckExtensionTest extends TestCase
 	{
 		$this->assertHealthCheckerService(
 			__DIR__ . '/config.exportModeFromService.neon',
-			TRUE,
+			true,
 			FullExportModeResolver::class,
 			ExportMode::Full,
 			[]
@@ -80,7 +81,7 @@ final class HealthCheckExtensionTest extends TestCase
 	{
 		$this->assertHealthCheckerService(
 			__DIR__ . '/config.exportModeFromStatement.neon',
-			TRUE,
+			true,
 			FullExportModeResolver::class,
 			ExportMode::Full,
 			[]
@@ -91,7 +92,7 @@ final class HealthCheckExtensionTest extends TestCase
 	{
 		$this->assertHealthCheckerService(
 			__DIR__ . '/config.exportModeFull.neon',
-			TRUE,
+			true,
 			StaticExportModeResolver::class,
 			ExportMode::Full,
 			[]
@@ -102,7 +103,7 @@ final class HealthCheckExtensionTest extends TestCase
 	{
 		$this->assertHealthCheckerService(
 			__DIR__ . '/config.exportModeFullIfDebug.neon',
-			FALSE,
+			false,
 			StaticExportModeResolver::class,
 			ExportMode::Simple,
 			[]
@@ -113,7 +114,7 @@ final class HealthCheckExtensionTest extends TestCase
 	{
 		$this->assertHealthCheckerService(
 			__DIR__ . '/config.exportModeFullIfDebug.neon',
-			TRUE,
+			true,
 			StaticExportModeResolver::class,
 			ExportMode::Full,
 			[]
@@ -124,7 +125,7 @@ final class HealthCheckExtensionTest extends TestCase
 	{
 		$this->assertHealthCheckerService(
 			__DIR__ . '/config.exportModeSimple.neon',
-			TRUE,
+			true,
 			StaticExportModeResolver::class,
 			ExportMode::Simple,
 			[]
@@ -135,7 +136,7 @@ final class HealthCheckExtensionTest extends TestCase
 	{
 		$this->assertHealthCheckerService(
 			__DIR__ . '/config.withServiceCheckers.neon',
-			TRUE,
+			true,
 			StaticExportModeResolver::class,
 			ExportMode::Full,
 			[
@@ -160,7 +161,15 @@ final class HealthCheckExtensionTest extends TestCase
 			Assert::type($expectedExportModeResolverClassname, $resolver);
 			Assert::same($expectedExportMode, $resolver->resolve());
 			Assert::equal($expectedServiceCheckers, $checker->serviceCheckers);
-		}, NULL, HealthChecker::class));
+		}, null, HealthChecker::class));
+	}
+
+	protected function tearDown(): void
+	{
+		# save manually partial code coverage to free memory
+		if (Collector::isStarted()) {
+			Collector::save();
+		}
 	}
 }
 

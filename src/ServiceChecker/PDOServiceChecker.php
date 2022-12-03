@@ -18,8 +18,8 @@ final class PDOServiceChecker implements ServiceCheckerInterface
 	 */
 	public function __construct(
 		private readonly string $dsn,
-		private readonly ?string $user = NULL,
-		private readonly ?string $password = NULL,
+		private readonly ?string $user = null,
+		private readonly ?string $password = null,
 		private readonly array $options = [],
 		private readonly string $serviceName = 'database',
 	) {
@@ -47,8 +47,8 @@ final class PDOServiceChecker implements ServiceCheckerInterface
 				$params['port'],
 				$params['dbname']
 			),
-			$params['user'] ?? NULL,
-			$params['password'] ?? NULL,
+			$params['user'] ?? null,
+			$params['password'] ?? null,
 			$params['options'] ?? []
 		);
 	}
@@ -67,7 +67,7 @@ final class PDOServiceChecker implements ServiceCheckerInterface
 
 			$statement = $pdo->query('SELECT 1;');
 
-			if (FALSE !== $statement) {
+			if (false !== $statement) {
 				$statement->execute();
 			}
 

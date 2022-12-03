@@ -20,7 +20,7 @@ final class ContainerFactory
 
 	public static function create(string|array $configFiles, bool $debugMode): Container
 	{
-		$tempDir = sys_get_temp_dir() . '/' . uniqid('68publishers:HealthCheck', TRUE);
+		$tempDir = sys_get_temp_dir() . '/' . uniqid('68publishers:HealthCheck', true);
 		$backtrace = debug_backtrace();
 
 		Helpers::purge($tempDir);

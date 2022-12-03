@@ -20,6 +20,8 @@ use function assert;
 use function implode;
 use function sprintf;
 use function array_map;
+use function is_string;
+use function str_starts_with;
 
 final class HealthCheckExtension extends CompilerExtension
 {
@@ -41,7 +43,7 @@ final class HealthCheckExtension extends CompilerExtension
 				->dynamic()
 				->default(self::EXPORT_MODE_FULL_IF_DEBUG)
 				->assert(
-					static fn (string|DynamicParameter $exportMode): bool => !is_string($exportMode) || NULL !== ExportMode::tryFrom($exportMode) || self::EXPORT_MODE_FULL_IF_DEBUG === $exportMode || str_starts_with($exportMode, '@'),
+					static fn (string|DynamicParameter $exportMode): bool => !is_string($exportMode) || null !== ExportMode::tryFrom($exportMode) || self::EXPORT_MODE_FULL_IF_DEBUG === $exportMode || str_starts_with($exportMode, '@'),
 					sprintf(
 						'Invalid export mode, allowed values are \'%s\', \'%s\', dynamic parameter or service reference.',
 						implode(
@@ -64,7 +66,7 @@ final class HealthCheckExtension extends CompilerExtension
 		assert($config instanceof HealthCheckConfig);
 
 		$builder->addDefinition($this->prefix('export_mode_resolver'))
-			->setAutowired(FALSE)
+			->setAutowired(false)
 			->setType(ExportModeResolverInterface::class)
 			->setFactory($this->createExportModeResolverStatement($config->export_mode));
 
@@ -78,7 +80,7 @@ final class HealthCheckExtension extends CompilerExtension
 			$serviceCheckerName = $this->prefix('service_checker.' . $i);
 
 			$builder->addDefinition($serviceCheckerName)
-				->setAutowired(FALSE)
+				->setAutowired(false)
 				->setType(ServiceCheckerInterface::class)
 				->setFactory($serviceCheckerFactory);
 
@@ -97,7 +99,7 @@ final class HealthCheckExtension extends CompilerExtension
 
 		# full-if-debug
 		if (self::EXPORT_MODE_FULL_IF_DEBUG === $exportMode) {
-			$debugMode = (bool) ($this->getContainerBuilder()->parameters['debugMode'] ?? FALSE);
+			$debugMode = (bool) ($this->getContainerBuilder()->parameters['debugMode'] ?? false);
 
 			return new Statement(StaticExportModeResolver::class, [
 				new Statement([ExportMode::class, 'from'], [
@@ -107,7 +109,7 @@ final class HealthCheckExtension extends CompilerExtension
 		}
 
 		# reference or classname/factory without ()
-		if (\is_string($exportMode) && NULL === ExportMode::tryFrom($exportMode)) {
+		if (is_string($exportMode) && null === ExportMode::tryFrom($exportMode)) {
 			return new Statement($exportMode);
 		}
 

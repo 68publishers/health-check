@@ -11,6 +11,7 @@ use Nette\Http\Request;
 use Nette\Utils\Helpers;
 use Nette\Http\UrlScript;
 use Nette\Application\Application;
+use Tester\CodeCoverage\Collector;
 use Nette\Http\IResponse as HttpResponse;
 use function assert;
 
@@ -22,7 +23,7 @@ final class HealthCheckApplicationExtensionTest extends TestCase
 	{
 		Assert::exception(
 			static function () {
-				ContainerFactory::create(__DIR__ . '/config.application.error.missingHealthCheckExtension.neon', TRUE);
+				ContainerFactory::create(__DIR__ . '/config.application.error.missingHealthCheckExtension.neon', true);
 			},
 			RuntimeException::class,
 			"Please register the compiler extension of type SixtyEightPublishers\\HealthCheck\\Bridge\\Nette\\DI\\HealthCheckExtension."
@@ -71,7 +72,7 @@ final class HealthCheckApplicationExtensionTest extends TestCase
 
 	private function assertResponse(string $config, string $url, int $expectedStatusCode, string $expectedResponse): void
 	{
-		$container = ContainerFactory::create($config, TRUE);
+		$container = ContainerFactory::create($config, true);
 
 		$container->addService('http.request', new Request(new UrlScript($url)));
 
@@ -83,6 +84,14 @@ final class HealthCheckApplicationExtensionTest extends TestCase
 
 		Assert::same($expectedStatusCode, $httpResponse->getCode());
 		Assert::same($expectedResponse, $output);
+	}
+
+	protected function tearDown(): void
+	{
+		# save manually partial code coverage to free memory
+		if (Collector::isStarted()) {
+			Collector::save();
+		}
 	}
 }
 

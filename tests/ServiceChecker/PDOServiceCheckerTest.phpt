@@ -42,7 +42,7 @@ final class PDOServiceCheckerTest extends TestCase
 
 	public function testServiceShouldByUnhealthyOnInvalidPort(): void
 	{
-		$checker = new PDOServiceChecker($this->createDsn(NULL, 1000), $_ENV['POSTGRES_USER'], $_ENV['POSTGRES_PASSWORD']);
+		$checker = new PDOServiceChecker($this->createDsn(null, 1000), $_ENV['POSTGRES_USER'], $_ENV['POSTGRES_PASSWORD']);
 		$result = $checker->check();
 
 		Assert::same('database', $checker->getName());
@@ -55,7 +55,7 @@ final class PDOServiceCheckerTest extends TestCase
 
 	public function testServiceShouldByUnhealthyOnInvalidDatabaseName(): void
 	{
-		$checker = new PDOServiceChecker($this->createDsn(NULL, NULL, 'invalid-database'), $_ENV['POSTGRES_USER'], $_ENV['POSTGRES_PASSWORD']);
+		$checker = new PDOServiceChecker($this->createDsn(null, null, 'invalid-database'), $_ENV['POSTGRES_USER'], $_ENV['POSTGRES_PASSWORD']);
 		$result = $checker->check();
 
 		Assert::same('database', $checker->getName());
@@ -117,7 +117,7 @@ final class PDOServiceCheckerTest extends TestCase
 			Assert::null($checker->user);
 			Assert::null($checker->password);
 			Assert::same([], $checker->options);
-		}, NULL, PDOServiceChecker::class));
+		}, null, PDOServiceChecker::class));
 	}
 
 	public function testCheckerShouldBeCreatedWithOptionalParameters(): void
@@ -140,10 +140,10 @@ final class PDOServiceCheckerTest extends TestCase
 			Assert::same('root', $checker->user);
 			Assert::same('pass', $checker->password);
 			Assert::same(['opt' => 'val'], $checker->options);
-		}, NULL, PDOServiceChecker::class));
+		}, null, PDOServiceChecker::class));
 	}
 
-	private function createDsn(?string $host = NULL, string|int|NULL $port = NULL, ?string $dbName = NULL): string
+	private function createDsn(?string $host = null, string|int|null $port = null, ?string $dbName = null): string
 	{
 		$host = $host ?? $_ENV['POSTGRES_HOST'];
 		$port = $port ?? $_ENV['POSTGRES_PORT'];

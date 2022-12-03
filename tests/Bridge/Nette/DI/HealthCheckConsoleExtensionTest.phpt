@@ -7,6 +7,7 @@ namespace SixtyEightPublishers\HealthCheck\Tests\Bridge\Nette\DI;
 use Tester\Assert;
 use Tester\TestCase;
 use RuntimeException;
+use Tester\CodeCoverage\Collector;
 use Symfony\Component\Console\Application;
 use SixtyEightPublishers\HealthCheck\Bridge\Symfony\Console\Command\HealthCheckCommand;
 use function assert;
@@ -19,7 +20,7 @@ final class HealthCheckConsoleExtensionTest extends TestCase
 	{
 		Assert::exception(
 			static function () {
-				ContainerFactory::create(__DIR__ . '/config.console.error.missingHealthCheckExtension.neon', TRUE);
+				ContainerFactory::create(__DIR__ . '/config.console.error.missingHealthCheckExtension.neon', true);
 			},
 			RuntimeException::class,
 			"Please register the compiler extension of type SixtyEightPublishers\\HealthCheck\\Bridge\\Nette\\DI\\HealthCheckExtension."
@@ -28,11 +29,19 @@ final class HealthCheckConsoleExtensionTest extends TestCase
 
 	public function testExtensionShouldBeRegistered(): void
 	{
-		$container = ContainerFactory::create(__DIR__ . '/config.console.neon', TRUE);
+		$container = ContainerFactory::create(__DIR__ . '/config.console.neon', true);
 		$application = $container->getByType(Application::class);
 		assert($application instanceof Application);
 
 		Assert::type(HealthCheckCommand::class, $application->get('health-check'));
+	}
+
+	protected function tearDown(): void
+	{
+		# save manually partial code coverage to free memory
+		if (Collector::isStarted()) {
+			Collector::save();
+		}
 	}
 }
 

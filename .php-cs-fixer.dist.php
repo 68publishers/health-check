@@ -15,7 +15,7 @@ return (new PhpCsFixer\Config())
 		'array_syntax' => ['syntax' => 'short'],
 		'trailing_comma_in_multiline' => TRUE,
 		'constant_case' => [
-			'case' => 'upper',
+			'case' => 'lower',
 		],
 		'declare_strict_types' => TRUE,
 		'phpdoc_align' => TRUE,

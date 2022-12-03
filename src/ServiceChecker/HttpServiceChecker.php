@@ -33,18 +33,18 @@ final class HttpServiceChecker implements ServiceCheckerInterface
 		try {
 			$context = stream_context_create([
 				'http' => [
-					'ignore_errors' => TRUE,
+					'ignore_errors' => true,
 					'method' => 'GET',
 					'timeout' => $this->timeout,
 				],
 			]);
-			$headers = @get_headers($this->url, FALSE, $context);
+			$headers = @get_headers($this->url, false, $context);
 
-			if (FALSE === $headers) {
+			if (false === $headers) {
 				return $this->serviceIsDown('Can\'t fetch a response.');
 			}
 
-			if (isset($headers[0]) && FALSE !== (bool) preg_match('~^HTTP/\d\.\d 200 OK~', $headers[0])) {
+			if (isset($headers[0]) && false !== (bool) preg_match('~^HTTP/\d\.\d 200 OK~', $headers[0])) {
 				return ServiceResult::createOk($this->getName());
 			}
 
@@ -61,12 +61,12 @@ final class HttpServiceChecker implements ServiceCheckerInterface
 		}
 	}
 
-	private function serviceIsDown(string $message, ?Throwable $previous = NULL): ResultInterface
+	private function serviceIsDown(string $message, ?Throwable $previous = null): ResultInterface
 	{
 		return ServiceResult::createError(
 			$this->getName(),
 			'down',
-			new HealthCheckException($message, NULL !== $previous ? $previous->getCode() : 0, $previous ?? NULL)
+			new HealthCheckException($message, null !== $previous ? $previous->getCode() : 0, $previous ?? null)
 		);
 	}
 }

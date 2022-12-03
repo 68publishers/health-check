@@ -13,6 +13,7 @@ use Nette\Application\IPresenterFactory;
 use Nette\DI\Definitions\ServiceDefinition;
 use SixtyEightPublishers\HealthCheck\Bridge\Nette\Application\HealthCheckRoute;
 use SixtyEightPublishers\HealthCheck\Bridge\Nette\Application\HealthCheckPresenter;
+use function count;
 use function assert;
 use function sprintf;
 
@@ -21,7 +22,7 @@ final class HealthCheckApplicationExtension extends CompilerExtension
 	public function getConfigSchema(): Schema
 	{
 		return Expect::structure([
-			'route' => Expect::anyOf(FALSE, Expect::string())->default('/health-check'),
+			'route' => Expect::anyOf(false, Expect::string())->default('/health-check'),
 		])->castTo(HealthCheckApplicationConfig::class);
 	}
 
@@ -53,7 +54,7 @@ final class HealthCheckApplicationExtension extends CompilerExtension
 			],
 		]);
 
-		if (FALSE === $config->route) {
+		if (false === $config->route) {
 			return;
 		}
 

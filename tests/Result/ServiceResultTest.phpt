@@ -23,9 +23,9 @@ final class ServiceResultTest extends TestCase
 		Assert::null($result->getError());
 		Assert::same([
 			'name' => 'test',
-			'is_ok' => TRUE,
+			'is_ok' => true,
 			'status' => 'ready',
-			'error' => NULL,
+			'error' => null,
 		], $result->toArray());
 		Assert::same('{"name":"test","is_ok":true,"status":"ready","error":null}', json_encode($result, JSON_THROW_ON_ERROR));
 	}
@@ -41,7 +41,7 @@ final class ServiceResultTest extends TestCase
 		Assert::same($exception, $result->getError());
 		Assert::same([
 			'name' => 'test',
-			'is_ok' => FALSE,
+			'is_ok' => false,
 			'status' => 'service unavailable',
 			'error' => '503 Service unavailable',
 		], $result->toArray());
