@@ -1,0 +1,51 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+  pull_request:
+    branches:
+      - master
+
+env:
+  REDIS5_HOST: localhost
+  REDIS6_HOST: localhost
+  POSTGRES_HOST: localhost
+  WEB_SERVICE_HOST: http://localhost:3030
+
+jobs:
+  tests:
+    name: Unit Tests [PHP ${{ matrix.php-versions }}]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: ['8.1', '8.2']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Start services
+        run: make start-services
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          tools: composer:v2
+          extensions: pgsql, pdo_pgsql, redis
+
+      - name: Install dependencies
+        run: composer update --no-progress --prefer-dist --prefer-stable --optimize-autoloader --quiet
+
+      - name: Run tests
+        run: vendor/bin/tester -C -s ./tests
+
+      - name: Install dependencies (lowest)
+        run: composer update --no-progress --prefer-dist --prefer-lowest --prefer-stable --optimize-autoloader --quiet
+
+      - name: Run tests
+        run: vendor/bin/tester -C -s ./tests
