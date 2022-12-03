@@ -3,13 +3,16 @@ init:
 	make start
 
 stop:
-	docker compose --env-file .env stop
+	docker compose --env-file .env --profile default stop
 
 start:
-	docker compose --env-file .env up -d
+	docker compose --env-file .env --profile default up -d
+
+start-services:
+	docker compose --env-file .env --profile services up -d
 
 down:
-	docker compose --env-file .env down
+	docker compose --env-file .env --profile default down
 
 restart:
 	make stop

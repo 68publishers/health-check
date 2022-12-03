@@ -7,6 +7,8 @@ services:
             dockerfile: Dockerfile
             target: php81
         container_name: 68publishers.health-check.81
+        profiles:
+            - default
         volumes:
             - .:/var/www/html:cached
         networks:
@@ -18,6 +20,8 @@ services:
             dockerfile: Dockerfile
             target: php82
         container_name: 68publishers.health-check.82
+        profiles:
+            - default
         volumes:
             - .:/var/www/html:cached
         networks:
@@ -27,6 +31,9 @@ services:
     redis5:
         image: redis:5.0.14-alpine
         container_name: 68publishers.health-check.redis5
+        profiles:
+            - default
+            - services
         ports:
             - ${REDIS5_PORT}:${REDIS5_PORT}
         command: redis-server --requirepass ${REDIS5_PASSWORD} --port ${REDIS5_PORT}
@@ -36,6 +43,9 @@ services:
     redis6:
         image: redis:6.2.7-alpine
         container_name: 68publishers.health-check.redis6
+        profiles:
+            - default
+            - services
         ports:
             - ${REDIS6_PORT}:${REDIS6_PORT}
         command: redis-server --port ${REDIS6_PORT} --aclfile /opt/bitnami/redis/mounted-etc/users.acl
@@ -47,6 +57,9 @@ services:
     postgres:
         image: postgres:14.6
         container_name: 68publishers.health-check.postgres
+        profiles:
+            - default
+            - services
         ports:
             - ${POSTGRES_PORT}:${POSTGRES_PORT}
         command: postgres
@@ -65,10 +78,13 @@ services:
     http-service:
         image: dotronglong/faker:stable
         container_name: 68publishers.health-check.http-service
+        profiles:
+            - default
+            - services
         volumes:
             - ./.docker/http-services:/app/mocks
         ports:
-            - ${HTTP_SERVICE_PORT}:${HTTP_SERVICE_PORT}
+            - ${WEB_SERVICE_PORT}:${WEB_SERVICE_PORT}
         networks:
             - package
 

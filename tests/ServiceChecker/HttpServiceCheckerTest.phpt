@@ -15,7 +15,7 @@ final class HttpServiceCheckerTest extends TestCase
 {
 	public function testServiceShouldBeHealthy(): void
 	{
-		$checker = new HttpServiceChecker('test', $_ENV['HTTP_SERVICE_HOST'] . '/200');
+		$checker = new HttpServiceChecker('test', $_ENV['WEB_SERVICE_HOST'] . '/200');
 		$result = $checker->check();
 
 		Assert::same('test', $checker->getName());
@@ -27,7 +27,7 @@ final class HttpServiceCheckerTest extends TestCase
 
 	public function testServiceShouldBeUnhealthyIfStatusCodeIsNot200(): void
 	{
-		$checker = new HttpServiceChecker('test', $_ENV['HTTP_SERVICE_HOST'] . '/503');
+		$checker = new HttpServiceChecker('test', $_ENV['WEB_SERVICE_HOST'] . '/503');
 		$result = $checker->check();
 
 		Assert::same('test', $checker->getName());
