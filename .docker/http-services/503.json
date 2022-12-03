@@ -1,0 +1,10 @@
+{
+	"request": {
+		"method": "GET",
+		"path": "/503"
+	},
+	"response": {
+		"statusCode": 503,
+		"body": "Service unavailable."
+	}
+}

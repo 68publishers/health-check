@@ -3,13 +3,13 @@ init:
 	make start
 
 stop:
-	docker compose stop
+	docker compose --env-file .env stop
 
 start:
-	docker compose up -d
+	docker compose --env-file .env up -d
 
 down:
-	docker compose down
+	docker compose --env-file .env down
 
 restart:
 	make stop
@@ -29,7 +29,7 @@ cs.check:
 
 stan:
 	PHP=81 make composer.update
-	docker exec 68publishers.health-check.81 vendor/bin/phpstan analyse --level 7 src
+	docker exec 68publishers.health-check.81 vendor/bin/phpstan analyse --level 9 src
 
 coverage:
 	PHP=81 make composer.update

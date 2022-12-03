@@ -24,11 +24,23 @@ services:
             - package
 
     # tested services
-    redis:
-        image: redis:7.0.5-alpine
-        container_name: 68publishers.health-check.redis
+    redis5:
+        image: redis:5.0.14-alpine
+        container_name: 68publishers.health-check.redis5
         ports:
-            - 6379:6379
+            - ${REDIS5_PORT}:${REDIS5_PORT}
+        command: redis-server --requirepass ${REDIS5_PASSWORD} --port ${REDIS5_PORT}
+        networks:
+            - package
+
+    redis6:
+        image: redis:6.2.7-alpine
+        container_name: 68publishers.health-check.redis6
+        ports:
+            - ${REDIS6_PORT}:${REDIS6_PORT}
+        command: redis-server --port ${REDIS6_PORT} --aclfile /opt/bitnami/redis/mounted-etc/users.acl
+        volumes:
+            - ./.docker/redis6/users.acl:/opt/bitnami/redis/mounted-etc/users.acl
         networks:
             - package
 
@@ -36,21 +48,24 @@ services:
         image: postgres:14.6
         container_name: 68publishers.health-check.postgres
         ports:
-            - 5432:5432
-        environment:
-            - PGDATA=/var/lib/postgresql/data/pgdata
-            - POSTGRES_USER=root
-            - POSTGRES_PASSWORD=root
-            - POSTGRES_DB=68publishers.health-check
+            - ${POSTGRES_PORT}:${POSTGRES_PORT}
         command: postgres
+        environment:
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            - POSTGRES_DB=${POSTGRES_DB}
         networks:
             - package
 
     http-service:
-        image: strm/helloworld-http
+        image: dotronglong/faker:stable
         container_name: 68publishers.health-check.http-service
+        volumes:
+            - ./.docker/http-services:/app/mocks
+        ports:
+            - ${HTTP_SERVICE_PORT}:${HTTP_SERVICE_PORT}
         networks:
             - package
 
 networks:
-  package:
+    package:
