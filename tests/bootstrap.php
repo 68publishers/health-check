@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Tester\Environment;
+use Symfony\Component\Dotenv\Dotenv;
 
 if (@!include __DIR__ . '/../vendor/autoload.php') {
 	echo 'Install Nette Tester using `composer install`';
@@ -12,3 +13,9 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 Environment::setup();
 Environment::bypassFinals();
 date_default_timezone_set('Europe/Prague');
+
+if (PHP_VERSION_ID >= 80200) {
+	error_reporting(~E_DEPRECATED);
+}
+
+(new Dotenv())->load(__DIR__ . '/../.env');
