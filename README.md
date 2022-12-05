@@ -1,12 +1,14 @@
-# Health check
+<h1 align="center">Health check</h1>
 
-[![Build Status][ico-travis]][link-travis]
-[![Quality Score][ico-code-quality]][link-code-quality]
-[![Coverage Status][ico-scrutinizer]][link-scrutinizer]
-[![Total Downloads][ico-downloads]][link-downloads]
-[![Latest Version on Packagist][ico-version]][link-packagist]
+<p align="center">:heartpulse: Health check for external services that are important for your application.</p>
 
-:heartpulse: Health check for external services that are important for your application.
+<p align="center">
+<a href="https://github.com/68publishers/health-check/actions"><img alt="Checks" src="https://badgen.net/github/checks/68publishers/health-check/master"></a>
+<a href="https://coveralls.io/github/68publishers/health-check?branch=master"><img alt="Coverage Status" src="https://coveralls.io/repos/github/68publishers/health-check/badge.svg?branch=master"></a>
+<a href="https://packagist.org/packages/68publishers/health-check"><img alt="Total Downloads" src="https://badgen.net/packagist/dt/68publishers/health-check"></a>
+<a href="https://packagist.org/packages/68publishers/health-check"><img alt="Latest Version" src="https://badgen.net/packagist/v/68publishers/health-check"></a>
+<a href="https://packagist.org/packages/68publishers/health-check"><img alt="PHP Version" src="https://badgen.net/packagist/php/68publishers/health-check"></a>
+</p>
 
 ## Installation
 
@@ -19,8 +21,7 @@ $ composer require 68publishers/health-check
 ## Standalone usage
 
 ```php
-<?php
-
+use SixtyEightPublishers\HealthCheck\ExportMode;
 use SixtyEightPublishers\HealthCheck\HealthChecker;
 use SixtyEightPublishers\HealthCheck\ServiceChecker\PDOServiceChecker;
 use SixtyEightPublishers\HealthCheck\ServiceChecker\RedisServiceChecker;
@@ -32,23 +33,29 @@ $checker->addServiceChecker(new RedisServiceChecker())
 # check all services
 $result = $checker->check();
 
-if ($result->isOk()) {
-    echo 'OK';
-} else {
+# you can throw an exception
+if (!$result->isOk()) {
     throw $result->getError();
 }
+
+# or covert the result into a JSON
+echo json_encode($result);
 
 # check Redis only
 $result = $checker->check(['redis']);
 
-#...
+# check in the "Full" mode. The default mode is "Simple".
+$result = $checker->check(NULL, ExportMode::Full);
+
+# the result now contains detailed information about each service
+echo json_encode($result);
 ```
 
 ## Available service checkers
 
-- Database using PDO (`SixtyEightPublishers\HealthCheck\ServiceChecker\PDOServiceChecker`)
-- Redis (`SixtyEightPublishers\HealthCheck\ServiceChecker\RedisServiceChecker`)
-- Http (`SixtyEightPublishers\HealthCheck\ServiceChecker\HttpServiceChecker`)
+- PDO - `SixtyEightPublishers\HealthCheck\ServiceChecker\PDOServiceChecker`
+- Redis - `SixtyEightPublishers\HealthCheck\ServiceChecker\RedisServiceChecker`
+- Http - `SixtyEightPublishers\HealthCheck\ServiceChecker\HttpServiceChecker`
 
 You can create your own service checker. Just create a class that implements the interface `ServiceCheckerInterface`.
 
@@ -74,6 +81,7 @@ extensions:
 			password: password
 		])
 		- MyCustomServiceChecker('foo')
+	export_mode: full_if_debug # This is the default value. Supported values are "full_if_debug", "full", "simple" or custom service that implements an interface "ExportModeResolverInterface".
 ```
 
 Now the service of type `SixtyEightPublishers\HealthCheck\HealthCheckerInterface` is accessible in DIC.
@@ -82,124 +90,60 @@ Now the service of type `SixtyEightPublishers\HealthCheck\HealthCheckerInterface
 
 ```neon
 extensions:
+	68publishers.health_check: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckExtension
 	68publishers.health_check.console: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckConsoleExtension
 ```
 
 Now you can run this command:
 
 ```bash
-$ bin/console health-check [<services>] [--full]
+$ bin/console health-check [<services>] [--export-mode <mode>]
 ```
 
-An array argument `services` represents the names of services for a check. The argument is optional so all services are checked when the argument is omitted.
+### Health check using Nette Application
 
-An output is simplified by default:
+```neon
+extensions:
+	68publishers.health_check: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckExtension
+	68publishers.health_check.application: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckApplicationExtension
 
-```bash
-$ bin/console health-check
-{
-    "status": "ok",
-    "is_ok": true
-}
+68publishers.health_check.application:
+	route: '/health-check' # The default value. You can change it or set it as "false".
 ```
 
-```bash
-$ bin/console health-check
-{
-    "status": "failed",
-    "is_ok": false
-}
-```
-
-But when an option `--full` is present the output contains information about all services:
-
-```bash
-$ bin/console health-check
-{
-    "status": "failed",
-    "is_ok": false,
-    "services": [
-        {
-            "name": "redis",
-            "is_ok": true,
-            "status": "running",
-            "error": null
-        },
-        {
-            "name": "database",
-            "is_ok": true,
-            "status": "running",
-            "error": null
-        },
-        {
-            "name": "foo",
-            "is_ok": false,
-            "status": "down",
-            "error": "The service responds with a status code 500."
-        }
-    ]
-}
-```
-
-### Health check using an endpoint
-
-Create a Presenter like this:
+The extension automatically appends the health check route into your RouteList. If you want to disable this behaviour, please set the option `route` to `false` and add the route to your route factory manually e.g.:
 
 ```php
 <?php
 
-use SixtyEightPublishers\HealthCheck\HealthCheckerInterface;
-use SixtyEightPublishers\HealthCheck\Bridge\Nette\UI\AbstractHealthCheckPresenter;
+namespace App;
 
-final class HealthCheckPresenter extends AbstractHealthCheckPresenter
-{
-    protected function getArrayExportMode() : string
-    {
-        # you can resolve an export mode in this method, use following constants:
+use Nette\Application\Routers\RouteList;
+use SixtyEightPublishers\HealthCheck\Bridge\Nette\Application\HealthCheckRoute;
 
-        # 1) HealthCheckerInterface::ARRAY_EXPORT_MODEL_SIMPLE
-        # 2) HealthCheckerInterface::ARRAY_EXPORT_MODE_FULL
-
-        return HealthCheckerInterface::ARRAY_EXPORT_MODE_FULL;
-    }
+class RouteFactory {
+	public static function create(): RouteList {
+		$router = new RouteList();
+		$router->add(new HealthCheckRoute('/health-check'));
+		
+		# ... other routes ...
+		
+		return $router;
+	}
 }
-```
-
-Then add a route in your Router Factory:
-
-```php
-<?php
-
-/** @var \Nette\Routing\Router $router */
-
-$router->addRoute('health-check', 'HealthCheck:default');
 ```
 
 Now you can check your services through an endpoint `your-domain.com/health-check`.
-The endpoint returns a status code `200` if everything is ok and `503` if some service check failed.
+The endpoint returns the status code `200` if everything is ok and `503` if some service check failed.
 
 ## Contributing
 
-Before committing any changes, don't forget to run
+Before opening a pull request, please check your changes using the following commands
 
 ```bash
-$ composer run php-cs-fixer
+$ make init # to pull and start all docker images
+
+$ make cs.check
+$ make stan
+$ make tests.all
 ```
-
-and
-
-```bash
-$ composer run tests
-```
-
-[ico-version]: https://img.shields.io/packagist/v/68publishers/health-check.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/68publishers/health-check/master.svg?style=flat-square
-[ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/68publishers/health-check.svg?style=flat-square
-[ico-code-quality]: https://img.shields.io/scrutinizer/g/68publishers/health-check.svg?style=flat-square
-[ico-downloads]: https://img.shields.io/packagist/dt/68publishers/health-check.svg?style=flat-square
-
-[link-packagist]: https://packagist.org/packages/68publishers/health-check
-[link-travis]: https://travis-ci.org/68publishers/health-check
-[link-scrutinizer]: https://scrutinizer-ci.com/g/68publishers/health-check/code-structure
-[link-code-quality]: https://scrutinizer-ci.com/g/68publishers/health-check
-[link-downloads]: https://packagist.org/packages/68publishers/health-check
