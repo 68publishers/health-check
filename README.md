@@ -67,21 +67,21 @@ The package provides compiler extensions for easy integration with Nette Framewo
 
 ```neon
 extensions:
-	68publishers.health_check: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckExtension
+    68publishers.health_check: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckExtension
 
 68publishers.health_check:
-	service_checkers:
-		- SixtyEightPublishers\HealthCheck\ServiceChecker\RedisServiceChecker()
-		- SixtyEightPublishers\HealthCheck\ServiceChecker\PDOServiceChecker::fromParams([
-			driver: pgsql
-			host: '127.0.0.1'
-			port: 5432
-			dbname: example
-			user: user
-			password: password
-		])
-		- MyCustomServiceChecker('foo')
-	export_mode: full_if_debug # This is the default value. Supported values are "full_if_debug", "full", "simple" or custom service that implements an interface "ExportModeResolverInterface".
+    service_checkers:
+        - SixtyEightPublishers\HealthCheck\ServiceChecker\RedisServiceChecker()
+        - SixtyEightPublishers\HealthCheck\ServiceChecker\PDOServiceChecker::fromParams([
+            driver: pgsql
+            host: '127.0.0.1'
+            port: 5432
+            dbname: example
+            user: user
+            password: password
+        ])
+        - MyCustomServiceChecker('foo')
+    export_mode: full_if_debug # This is the default value. Supported values are "full_if_debug", "full", "simple" or custom service that implements an interface "ExportModeResolverInterface".
 ```
 
 Now the service of type `SixtyEightPublishers\HealthCheck\HealthCheckerInterface` is accessible in DIC.
@@ -90,8 +90,8 @@ Now the service of type `SixtyEightPublishers\HealthCheck\HealthCheckerInterface
 
 ```neon
 extensions:
-	68publishers.health_check: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckExtension
-	68publishers.health_check.console: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckConsoleExtension
+    68publishers.health_check: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckExtension
+    68publishers.health_check.console: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckConsoleExtension
 ```
 
 Now you can run this command:
@@ -104,11 +104,11 @@ $ bin/console health-check [<services>] [--export-mode <mode>]
 
 ```neon
 extensions:
-	68publishers.health_check: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckExtension
-	68publishers.health_check.application: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckApplicationExtension
+    68publishers.health_check: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckExtension
+    68publishers.health_check.application: SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\HealthCheckApplicationExtension
 
 68publishers.health_check.application:
-	route: '/health-check' # The default value. You can change it or set it as "false".
+    route: '/health-check' # The default value. You can change it or set it as "false".
 ```
 
 The extension automatically appends the health check route into your RouteList. If you want to disable this behaviour, please set the option `route` to `false` and add the route to your route factory manually e.g.:
@@ -122,14 +122,14 @@ use Nette\Application\Routers\RouteList;
 use SixtyEightPublishers\HealthCheck\Bridge\Nette\Application\HealthCheckRoute;
 
 class RouteFactory {
-	public static function create(): RouteList {
-		$router = new RouteList();
-		$router->add(new HealthCheckRoute('/health-check'));
-		
-		# ... other routes ...
-		
-		return $router;
-	}
+    public static function create(): RouteList {
+        $router = new RouteList();
+        $router->add(new HealthCheckRoute('/health-check'));
+        
+        # ... other routes ...
+        
+        return $router;
+    }
 }
 ```
 
