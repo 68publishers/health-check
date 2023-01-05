@@ -15,6 +15,6 @@ health_check.application:
 	route: false
 
 services:
-	router:
+	@Nette\Routing\Router:
 		setup:
 			- add(SixtyEightPublishers\HealthCheck\Bridge\Nette\Application\HealthCheckRoute())

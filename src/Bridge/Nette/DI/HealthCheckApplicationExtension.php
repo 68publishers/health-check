@@ -7,6 +7,7 @@ namespace SixtyEightPublishers\HealthCheck\Bridge\Nette\DI;
 use RuntimeException;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
+use Nette\Routing\Router;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Definitions\Statement;
 use Nette\Application\IPresenterFactory;
@@ -58,7 +59,7 @@ final class HealthCheckApplicationExtension extends CompilerExtension
 			return;
 		}
 
-		$router = $builder->getDefinition('router');
+		$router = $builder->getDefinitionByType(Router::class);
 		assert($router instanceof ServiceDefinition);
 
 		$router->addSetup('prepend', [
