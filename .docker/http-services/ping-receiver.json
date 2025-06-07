@@ -1,0 +1,10 @@
+{
+	"request": {
+		"method": "POST",
+		"path": "/ping-receiver"
+	},
+	"response": {
+		"statusCode": 200,
+		"body": "Ping received."
+	}
+}

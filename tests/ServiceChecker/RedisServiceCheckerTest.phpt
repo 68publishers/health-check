@@ -21,7 +21,7 @@ final class RedisServiceCheckerTest extends TestCase
 		Assert::same('redis', $checker->getName());
 		Assert::same('redis', $result->getName());
 		Assert::true($result->isOk());
-		Assert::same('running', $result->getStatus());
+		Assert::same([], $result->getDetail());
 		Assert::null($result->getError());
 	}
 
@@ -33,7 +33,7 @@ final class RedisServiceCheckerTest extends TestCase
 		Assert::same('redis', $checker->getName());
 		Assert::same('redis', $result->getName());
 		Assert::true($result->isOk());
-		Assert::same('running', $result->getStatus());
+		Assert::same([], $result->getDetail());
 		Assert::null($result->getError());
 	}
 
@@ -45,7 +45,7 @@ final class RedisServiceCheckerTest extends TestCase
 		Assert::same('redis', $checker->getName());
 		Assert::same('redis', $result->getName());
 		Assert::false($result->isOk());
-		Assert::same('unauthorized', $result->getStatus());
+		Assert::same([], $result->getDetail());
 		Assert::type(HealthCheckException::class, $result->getError());
 		Assert::same('Failed to auth a connection.', $result->getError()->getMessage());
 	}
@@ -58,7 +58,7 @@ final class RedisServiceCheckerTest extends TestCase
 		Assert::same('redis', $checker->getName());
 		Assert::same('redis', $result->getName());
 		Assert::false($result->isOk());
-		Assert::same('unauthorized', $result->getStatus());
+		Assert::same([], $result->getDetail());
 		Assert::type(HealthCheckException::class, $result->getError());
 		Assert::same('Failed to auth a connection.', $result->getError()->getMessage());
 	}
@@ -71,7 +71,7 @@ final class RedisServiceCheckerTest extends TestCase
 		Assert::same('redis', $checker->getName());
 		Assert::same('redis', $result->getName());
 		Assert::false($result->isOk());
-		Assert::same('down', $result->getStatus());
+		Assert::same([], $result->getDetail());
 		Assert::type(HealthCheckException::class, $result->getError());
 		Assert::same('Connection refused', $result->getError()->getMessage());
 	}
@@ -84,7 +84,7 @@ final class RedisServiceCheckerTest extends TestCase
 		Assert::same('redis', $checker->getName());
 		Assert::same('redis', $result->getName());
 		Assert::false($result->isOk());
-		Assert::same('down', $result->getStatus());
+		Assert::same([], $result->getDetail());
 		Assert::type(HealthCheckException::class, $result->getError());
 		Assert::same('Connection refused', $result->getError()->getMessage());
 	}

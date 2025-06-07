@@ -49,9 +49,20 @@ final class RedisServiceChecker implements ServiceCheckerInterface
 			$redis->ping();
 			$redis->close();
 
-			return ServiceResult::createOk($this->getName());
+			return ServiceResult::createOk(
+				serviceName: $this->getName(),
+				detail: [],
+			);
 		} catch (RedisException $e) {
-			return ServiceResult::createError($this->getName(), 'down', new HealthCheckException($e->getMessage(), 0, $e));
+			return ServiceResult::createError(
+				serviceName: $this->getName(),
+				detail: [],
+				error: new HealthCheckException(
+					message: $e->getMessage(),
+					code: 0,
+					previous: $e,
+				),
+			);
 		}
 	}
 
@@ -69,6 +80,14 @@ final class RedisServiceChecker implements ServiceCheckerInterface
 
 		return $authorized
 			? null
-			: ServiceResult::createError($this->getName(), 'unauthorized', new HealthCheckException('Failed to auth a connection.', 0, $e ?? null));
+			: ServiceResult::createError(
+				serviceName: $this->getName(),
+				detail: [],
+				error: new HealthCheckException(
+					message: 'Failed to auth a connection.',
+					code: 0,
+					previous: $e ?? null,
+				)
+			);
 	}
 }

@@ -10,9 +10,11 @@ use Tester\TestCase;
 use InvalidArgumentException;
 use SixtyEightPublishers\HealthCheck\ExportMode;
 use SixtyEightPublishers\HealthCheck\HealthChecker;
+use SixtyEightPublishers\HealthCheck\Result\PingResult;
 use SixtyEightPublishers\HealthCheck\Result\ResultInterface;
 use SixtyEightPublishers\HealthCheck\Result\HealthCheckResult;
 use SixtyEightPublishers\HealthCheck\ExportModeResolverInterface;
+use SixtyEightPublishers\HealthCheck\Tests\Fixtures\CatchPingReceiver;
 use SixtyEightPublishers\HealthCheck\ServiceChecker\ServiceCheckerInterface;
 use function assert;
 
@@ -172,7 +174,7 @@ final class HealthCheckerTest extends TestCase
 		Assert::same(ExportMode::Full, $healthCheckResult->getExportMode());
 	}
 
-	public function testDefaultExportModeShouldBeOverloadedByMethodArgument(): void
+	public function testDefaultExportModeShouldBeOverloadedByEnumMethodArgument(): void
 	{
 		$checker = new HealthChecker();
 		$healthCheckResult = $checker->check(null, ExportMode::Full);
@@ -181,6 +183,42 @@ final class HealthCheckerTest extends TestCase
 		assert($healthCheckResult instanceof HealthCheckResult);
 
 		Assert::same(ExportMode::Full, $healthCheckResult->getExportMode());
+	}
+
+	public function testDefaultExportModeShouldBeOverloadedByStringMethodArgument(): void
+	{
+		$checker = new HealthChecker();
+		$healthCheckResult = $checker->check(null, 'full');
+
+		Assert::type(HealthCheckResult::class, $healthCheckResult);
+		assert($healthCheckResult instanceof HealthCheckResult);
+
+		Assert::same(ExportMode::Full, $healthCheckResult->getExportMode());
+	}
+
+	public function testPingShouldNotBePerformedWhenReceiverNotProvided(): void
+	{
+		$checker = new HealthChecker();
+		$pingResult = $checker->check(null, 'ping');
+
+		Assert::type(PingResult::class, $pingResult);
+		assert($pingResult instanceof PingResult);
+
+		Assert::false($pingResult->ok);
+	}
+
+	public function testPingShouldBePerformed(): void
+	{
+		$checker = new HealthChecker(
+			pingReceiver: $receiver = new CatchPingReceiver(),
+		);
+		$pingResult = $checker->check(null, 'ping');
+
+		Assert::type(PingResult::class, $pingResult);
+		assert($pingResult instanceof PingResult);
+
+		Assert::true($pingResult->ok);
+		Assert::type(HealthCheckResult::class, $receiver->data);
 	}
 
 	protected function tearDown(): void

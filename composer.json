@@ -16,11 +16,13 @@
 	"require-dev": {
 		"ext-pdo": "*",
 		"ext-redis": "*",
+		"doctrine/dbal": "^3.9 || ^4.2",
 		"friendsofphp/php-cs-fixer": "^3.13",
 		"mockery/mockery": "^1.5",
 		"nette/application": "^3.1.4",
 		"nette/bootstrap": "^3.1",
-		"nette/di": "^3.0.6",
+		"nette/caching": "^3.3",
+		"nette/di": "^3.1.10",
 		"nette/http": "^3.2",
 		"nette/tester": "^2.4.3",
 		"phpstan/phpstan": "^1.9",
@@ -34,7 +36,7 @@
 		"symfony/console": "If you want to use a console command."
 	},
 	"conflict": {
-		"nette/di": "<3.0.6",
+		"nette/di": "<3.1.10",
 		"nette/http": "<3.2",
 		"nette/schema": "<1.1",
 		"symfony/console": "<5.4"

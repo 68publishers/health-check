@@ -7,7 +7,6 @@ namespace SixtyEightPublishers\HealthCheck\Tests\Bridge\Nette\DI;
 use Closure;
 use Tester\Assert;
 use Tester\TestCase;
-use Tester\CodeCoverage\Collector;
 use Nette\DI\InvalidConfigurationException;
 use SixtyEightPublishers\HealthCheck\ExportMode;
 use SixtyEightPublishers\HealthCheck\HealthChecker;
@@ -162,14 +161,6 @@ final class HealthCheckExtensionTest extends TestCase
 			Assert::same($expectedExportMode, $resolver->resolve());
 			Assert::equal($expectedServiceCheckers, $checker->serviceCheckers);
 		}, null, HealthChecker::class));
-	}
-
-	protected function tearDown(): void
-	{
-		# save manually partial code coverage to free memory
-		if (Collector::isStarted()) {
-			Collector::save();
-		}
 	}
 }
 

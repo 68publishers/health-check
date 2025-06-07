@@ -6,24 +6,47 @@ namespace SixtyEightPublishers\HealthCheck\Result;
 
 use SixtyEightPublishers\HealthCheck\Exception\HealthCheckExceptionInterface;
 
+/**
+ * @phpstan-type ServiceResultArray = array{
+ *     name: string,
+ *     is_ok: bool,
+ *     detail: array<string, mixed>,
+ *     error: string|null,
+ * }
+ * @phpstan-type ServiceResultJson = array{
+ *     name: string,
+ *     is_ok: bool,
+ *     detail: object,
+ *     error: string|null,
+ * }
+ */
 final class ServiceResult implements ResultInterface
 {
+	/**
+	 * @param array<string, mixed> $detail
+	 */
 	private function __construct(
-		private readonly string $serviceName,
-		private readonly bool $ok,
-		private readonly string $status,
+		private readonly string                         $serviceName,
+		private readonly bool                           $ok,
+		private readonly array                          $detail,
 		private readonly ?HealthCheckExceptionInterface $error = null,
 	) {
 	}
 
-	public static function createOk(string $serviceName, string $status = 'running'): self
+	/**
+	 * @param array<string, mixed> $detail
+	 */
+	public static function createOk(string $serviceName, array $detail): self
 	{
-		return new self($serviceName, true, $status);
+		return new self($serviceName, true, $detail);
 	}
 
-	public static function createError(string $serviceName, string $status, HealthCheckExceptionInterface $error): self
+	/**
+	 * @param array<string, mixed> $detail
+	 */
+	public static function createError(string $serviceName, array $detail, HealthCheckExceptionInterface $error): self
 	{
-		return new self($serviceName, false, $status, $error);
+		return new self($serviceName, false, $detail, $error);
 	}
 
 	public function getName(): string
@@ -36,9 +59,9 @@ final class ServiceResult implements ResultInterface
 		return $this->ok;
 	}
 
-	public function getStatus(): string
+	public function getDetail(): array
 	{
-		return $this->status;
+		return $this->detail;
 	}
 
 	public function getError(): ?HealthCheckExceptionInterface
@@ -47,23 +70,26 @@ final class ServiceResult implements ResultInterface
 	}
 
 	/**
-	 * @return array{name: string, is_ok: bool, status: string, error: ?string}
+	 * @return ServiceResultArray
 	 */
 	public function toArray(): array
 	{
 		return [
 			'name' => $this->getName(),
 			'is_ok' => $this->isOk(),
-			'status' => $this->getStatus(),
+			'detail' => $this->getDetail(),
 			'error' => $this->getError()?->getMessage(),
 		];
 	}
 
 	/**
-	 * @return array{name: string, is_ok: bool, status: string, error: ?string}
+	 * @return ServiceResultJson
 	 */
 	public function jsonSerialize(): array
 	{
-		return $this->toArray();
+		$array = $this->toArray();
+		$array['detail'] = (object) $array['detail'];
+
+		return $array;
 	}
 }

@@ -11,18 +11,33 @@ use SixtyEightPublishers\HealthCheck\ServiceChecker\ServiceCheckerInterface;
 
 final class UnhealthyServiceChecker implements ServiceCheckerInterface
 {
+	/**
+	 * @param array<string, mixed> $detail
+	 * @param list<string>         $groups
+	 */
 	public function __construct(
-		private readonly string $name,
+		private readonly string $serviceName,
+		private readonly array  $detail = [],
+		private readonly array  $groups = ['default'],
 	) {
 	}
 
 	public function getName(): string
 	{
-		return $this->name;
+		return $this->serviceName;
+	}
+
+	public function getGroups(): array
+	{
+		return $this->groups;
 	}
 
 	public function check(): ResultInterface
 	{
-		return ServiceResult::createError($this->name, 'unhealthy', new HealthCheckException('Service is unhealthy.'));
+		return ServiceResult::createError(
+			serviceName: $this->serviceName,
+			detail: $this->detail,
+			error: new HealthCheckException('Service is unhealthy.'),
+		);
 	}
 }

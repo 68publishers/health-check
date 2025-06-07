@@ -13,7 +13,10 @@ interface ResultInterface extends JsonSerializable
 
 	public function isOk(): bool;
 
-	public function getStatus(): string;
+	/**
+	 * @return array<string, mixed>
+	 */
+	public function getDetail(): array;
 
 	public function getError(): ?HealthCheckExceptionInterface;
 

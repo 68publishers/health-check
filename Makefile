@@ -21,6 +21,8 @@ restart:
 tests.all:
 	PHP=81 make tests.run
 	PHP=82 make tests.run
+	PHP=83 make tests.run
+	PHP=84 make tests.run
 
 cs.fix:
 	PHP=81 make composer.update
@@ -32,7 +34,7 @@ cs.check:
 
 stan:
 	PHP=81 make composer.update
-	docker exec 68publishers.health-check.81 vendor/bin/phpstan analyse --level 9 src
+	docker exec 68publishers.health-check.81 vendor/bin/phpstan analyse --level 9 src --memory-limit=-1
 
 coverage:
 	PHP=81 make composer.update

@@ -21,7 +21,7 @@ final class HttpServiceCheckerTest extends TestCase
 		Assert::same('test', $checker->getName());
 		Assert::same('test', $result->getName());
 		Assert::true($result->isOk());
-		Assert::same('running', $result->getStatus());
+		Assert::same(['status_code' => 200], $result->getDetail());
 		Assert::null($result->getError());
 	}
 
@@ -33,9 +33,9 @@ final class HttpServiceCheckerTest extends TestCase
 		Assert::same('test', $checker->getName());
 		Assert::same('test', $result->getName());
 		Assert::false($result->isOk());
-		Assert::same('down', $result->getStatus());
+		Assert::same(['status_code' => 503], $result->getDetail());
 		Assert::type(HealthCheckException::class, $result->getError());
-		Assert::same('Server respond with the status header HTTP/1.1 503 Service Unavailable', $result->getError()->getMessage());
+		Assert::same('Server respond with unexpected status code 503.', $result->getError()->getMessage());
 	}
 
 	public function testServiceShouldBeUnhealthyIfInvalidUrlPassed(): void
@@ -46,7 +46,7 @@ final class HttpServiceCheckerTest extends TestCase
 		Assert::same('test', $checker->getName());
 		Assert::same('test', $result->getName());
 		Assert::false($result->isOk());
-		Assert::same('down', $result->getStatus());
+		Assert::same(['status_code' => null], $result->getDetail());
 		Assert::type(HealthCheckException::class, $result->getError());
 		Assert::same('Can\'t fetch a response.', $result->getError()->getMessage());
 	}
