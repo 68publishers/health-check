@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install PHP
         uses: shivammathur/setup-php@v2
@@ -52,4 +52,4 @@ jobs:
         run: vendor/bin/php-cs-fixer fix -v --dry-run
 
       - name: PhpStan
-        run: vendor/bin/phpstan analyse --level 9 src
+        run: vendor/bin/phpstan analyse --level 9 src --memory-limit=-1

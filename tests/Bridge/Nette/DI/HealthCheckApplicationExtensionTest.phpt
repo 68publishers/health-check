@@ -11,7 +11,6 @@ use Nette\Http\Request;
 use Nette\Utils\Helpers;
 use Nette\Http\UrlScript;
 use Nette\Application\Application;
-use Tester\CodeCoverage\Collector;
 use Nette\Http\IResponse as HttpResponse;
 use function assert;
 
@@ -46,7 +45,7 @@ final class HealthCheckApplicationExtensionTest extends TestCase
 			__DIR__ . '/config.application.minimal.neon',
 			'http://localhost.dev/health-check',
 			HttpResponse::S200_OK,
-			'{"status":"ok","is_ok":true,"services":[{"name":"first","is_ok":true,"status":"healthy","error":null},{"name":"second","is_ok":true,"status":"healthy","error":null}]}'
+			'{"is_ok":true,"detail":{"services":[{"name":"first","is_ok":true,"detail":{},"error":null},{"name":"second","is_ok":true,"detail":{},"error":null}]}}'
 		);
 	}
 
@@ -56,7 +55,7 @@ final class HealthCheckApplicationExtensionTest extends TestCase
 			__DIR__ . '/config.application.withManuallyRegisteredRoute.neon',
 			'http://localhost.dev/health-check',
 			HttpResponse::S200_OK,
-			'{"status":"ok","is_ok":true,"services":[{"name":"first","is_ok":true,"status":"healthy","error":null},{"name":"second","is_ok":true,"status":"healthy","error":null}]}'
+			'{"is_ok":true,"detail":{"services":[{"name":"first","is_ok":true,"detail":{},"error":null},{"name":"second","is_ok":true,"detail":{},"error":null}]}}'
 		);
 	}
 
@@ -66,7 +65,7 @@ final class HealthCheckApplicationExtensionTest extends TestCase
 			__DIR__ . '/config.application.withRouteOption.neon',
 			'http://localhost.dev/api/health-check',
 			HttpResponse::S503_ServiceUnavailable,
-			'{"status":"failed","is_ok":false,"services":[{"name":"first","is_ok":true,"status":"healthy","error":null},{"name":"second","is_ok":false,"status":"unhealthy","error":"Service is unhealthy."}]}'
+			'{"is_ok":false,"detail":{"services":[{"name":"first","is_ok":true,"detail":{},"error":null},{"name":"second","is_ok":false,"detail":{},"error":"Service is unhealthy."}]}}'
 		);
 	}
 
@@ -84,14 +83,6 @@ final class HealthCheckApplicationExtensionTest extends TestCase
 
 		Assert::same($expectedStatusCode, $httpResponse->getCode());
 		Assert::same($expectedResponse, $output);
-	}
-
-	protected function tearDown(): void
-	{
-		# save manually partial code coverage to free memory
-		if (Collector::isStarted()) {
-			Collector::save();
-		}
 	}
 }
 

@@ -19,6 +19,8 @@ final class HttpServiceChecker implements ServiceCheckerInterface
 	public function __construct(
 		private readonly string $serviceName,
 		private readonly string $url,
+		private readonly string $method = 'GET',
+		private readonly int $expectedCode = 200,
 		private readonly int $timeout = 5,
 	) {
 	}
@@ -34,39 +36,81 @@ final class HttpServiceChecker implements ServiceCheckerInterface
 			$context = stream_context_create([
 				'http' => [
 					'ignore_errors' => true,
-					'method' => 'GET',
+					'method' => $this->method,
 					'timeout' => $this->timeout,
 				],
 			]);
-			$headers = @get_headers($this->url, false, $context);
+			$headers = @get_headers(
+				url: $this->url,
+				context: $context,
+			);
 
 			if (false === $headers) {
-				return $this->serviceIsDown('Can\'t fetch a response.');
+				return $this->serviceIsDown(
+					message: 'Can\'t fetch a response.',
+					detail: [
+						'status_code' => null,
+					],
+				);
 			}
 
-			if (isset($headers[0]) && false !== (bool) preg_match('~^HTTP/\d\.\d 200 OK~', $headers[0])) {
-				return ServiceResult::createOk($this->getName());
+			if (preg_match('#^HTTP/\d+\.\d+\s+(\d{3})#', $headers[0] ?? '', $matches)) {
+				$statusCode = (int) $matches[1];
+
+				if ($statusCode === $this->expectedCode) {
+					return ServiceResult::createOk(
+						serviceName: $this->getName(),
+						detail: [
+							'status_code' => $statusCode,
+						],
+					);
+				}
+
+				return $this->serviceIsDown(
+					message: sprintf(
+						'Server respond with unexpected status code %d.',
+						$statusCode,
+					),
+					detail: [
+						'status_code' => $statusCode,
+					],
+				);
 			}
 
-			return $this->serviceIsDown(sprintf(
-				'Server respond with the status header %s',
-				$headers[0] ?? '[unknown]'
-			));
+			return $this->serviceIsDown(
+				message: 'Server respond with unknown status code.',
+				detail: [
+					'status_code' => null,
+				],
+			);
 		} catch (Throwable $e) {
-			return $this->serviceIsDown(sprintf(
-				'[%s] %s',
-				get_class($e),
-				$e->getMessage()
-			), $e);
+			return $this->serviceIsDown(
+				message: sprintf(
+					'[%s] %s',
+					get_class($e),
+					$e->getMessage()
+				),
+				detail: [
+					'status_code' => null,
+				],
+				previous: $e,
+			);
 		}
 	}
 
-	private function serviceIsDown(string $message, ?Throwable $previous = null): ResultInterface
+	/**
+	 * @param array<string, mixed> $detail
+	 */
+	private function serviceIsDown(string $message, array $detail = [], ?Throwable $previous = null): ResultInterface
 	{
 		return ServiceResult::createError(
-			$this->getName(),
-			'down',
-			new HealthCheckException($message, null !== $previous ? $previous->getCode() : 0, $previous ?? null)
+			serviceName: $this->getName(),
+			detail: $detail,
+			error: new HealthCheckException(
+				message: $message,
+				code: null !== $previous ? $previous->getCode() : 0,
+				previous: $previous ?? null,
+			),
 		);
 	}
 }

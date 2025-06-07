@@ -9,20 +9,38 @@ use SixtyEightPublishers\HealthCheck\Exception\MultipleResultsException;
 use SixtyEightPublishers\HealthCheck\Exception\HealthCheckExceptionInterface;
 use function array_map;
 use function array_filter;
+use function array_values;
 
+/**
+ * @phpstan-import-type ServiceResultArray from ServiceResult
+ * @phpstan-import-type ServiceResultJson from ServiceResult
+ *
+ * @phpstan-type HealthCheckResultArray = array{
+ *     is_ok: bool,
+ *     detail?: array{
+ *         services: list<ServiceResultArray>,
+ *     },
+ * }
+ * @phpstan-type HealthCheckResultJson = array{
+ *     is_ok: bool,
+ *     detail?: array{
+ *         services: list<ServiceResultJson>,
+ *     },
+ * }
+ */
 final class HealthCheckResult implements ResultInterface
 {
-	/** @var array<ResultInterface> */
+	/** @var list<ResultInterface> */
 	private array $results;
 
 	private ExportMode $exportMode = ExportMode::Simple;
 
 	/**
-	 * @param array<ResultInterface> $results
+	 * @param list<ResultInterface> $results
 	 */
 	public function __construct(array $results = [])
 	{
-		$this->results = (static fn (ResultInterface ...$results): array => $results)(...$results);
+		$this->results = (static fn (ResultInterface ...$results): array => array_values($results))(...$results);
 	}
 
 	public function withResult(ResultInterface $result): self
@@ -42,7 +60,7 @@ final class HealthCheckResult implements ResultInterface
 	}
 
 	/**
-	 * @return array<ResultInterface>
+	 * @return list<ResultInterface>
 	 */
 	public function getResults(): array
 	{
@@ -70,15 +88,16 @@ final class HealthCheckResult implements ResultInterface
 		return true;
 	}
 
-	public function getStatus(): string
+	/**
+	 * @return array{
+	 *     services: list<ServiceResultArray>,
+	 * }
+	 */
+	public function getDetail(): array
 	{
-		foreach ($this->results as $result) {
-			if (!$result->isOk()) {
-				return 'failed';
-			}
-		}
-
-		return 'ok';
+		return [ # @phpstan-ignore-line
+			'services' => array_map(static fn (ResultInterface $result): array => $result->toArray(), $this->results),
+		];
 	}
 
 	public function getError(): ?HealthCheckExceptionInterface
@@ -89,27 +108,36 @@ final class HealthCheckResult implements ResultInterface
 	}
 
 	/**
-	 * @return array{status: string, is_ok: bool, services?: array<int, array<string, mixed>>}
+	 * @return HealthCheckResultArray
 	 */
 	public function toArray(): array
 	{
 		$array = [
-			'status' => $this->getStatus(),
 			'is_ok' => $this->isOk(),
 		];
 
 		if (ExportMode::Full === $this->exportMode) {
-			$array['services'] = array_map(static fn (ResultInterface $result): array => $result->toArray(), $this->results);
+			$array['detail'] = $this->getDetail();
 		}
 
 		return $array;
 	}
 
 	/**
-	 * @return array{status: string, is_ok: bool, services?: array<int, array<string, mixed>>}
+	 * @return HealthCheckResultJson
 	 */
 	public function jsonSerialize(): array
 	{
-		return $this->toArray();
+		$array = [
+			'is_ok' => $this->isOk(),
+		];
+
+		if (ExportMode::Full === $this->exportMode) {
+			$array['detail'] = [
+				'services' => array_map(static fn (ResultInterface $result): array => (array) $result->jsonSerialize(), $this->results),
+			];
+		}
+
+		return $array; # @phpstan-ignore-line
 	}
 }

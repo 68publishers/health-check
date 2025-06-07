@@ -54,6 +54,7 @@ echo json_encode($result);
 ## Available service checkers
 
 - PDO - `SixtyEightPublishers\HealthCheck\ServiceChecker\PDOServiceChecker`
+- Doctrine DBAL - `SixtyEightPublishers\HealthCheck\ServiceChecker\DbalConnectionServiceChecker`
 - Redis - `SixtyEightPublishers\HealthCheck\ServiceChecker\RedisServiceChecker`
 - Http - `SixtyEightPublishers\HealthCheck\ServiceChecker\HttpServiceChecker`
 

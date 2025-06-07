@@ -14,5 +14,5 @@ interface HealthCheckerInterface
 	/**
 	 * @param array<string>|null $servicesOnly
 	 */
-	public function check(?array $servicesOnly = null, ?ExportMode $exportMode = null): ResultInterface;
+	public function check(?array $servicesOnly = null, ExportMode|string|null $exportMode = null): ResultInterface;
 }

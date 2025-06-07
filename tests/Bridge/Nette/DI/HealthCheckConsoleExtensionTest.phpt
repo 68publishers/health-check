@@ -7,7 +7,6 @@ namespace SixtyEightPublishers\HealthCheck\Tests\Bridge\Nette\DI;
 use Tester\Assert;
 use Tester\TestCase;
 use RuntimeException;
-use Tester\CodeCoverage\Collector;
 use Symfony\Component\Console\Application;
 use SixtyEightPublishers\HealthCheck\Bridge\Symfony\Console\Command\HealthCheckCommand;
 use function assert;
@@ -34,14 +33,6 @@ final class HealthCheckConsoleExtensionTest extends TestCase
 		assert($application instanceof Application);
 
 		Assert::type(HealthCheckCommand::class, $application->get('health-check'));
-	}
-
-	protected function tearDown(): void
-	{
-		# save manually partial code coverage to free memory
-		if (Collector::isStarted()) {
-			Collector::save();
-		}
 	}
 }
 

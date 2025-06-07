@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Start services
         run: make start-services
@@ -31,15 +31,15 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.1
-          coverage: none
-          extensions: tokenizer
+          coverage: pcov
+          extensions: tokenizer, uopz, pgsql, pdo_pgsql, redis
           tools: composer:v2
 
       - name: Install dependencies
         run: composer update --no-progress --prefer-dist --prefer-stable --optimize-autoloader --quiet
 
       - name: Generate the coverage report
-        run: vendor/bin/tester -p phpdbg -C -s --coverage ./coverage.xml --coverage-src ./src ./tests
+        run: vendor/bin/tester -C -s --coverage ./coverage.xml --coverage-src ./src ./tests
 
       - name: Upload the coverage report
         env:

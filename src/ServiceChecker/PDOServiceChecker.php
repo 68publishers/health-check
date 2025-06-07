@@ -10,6 +10,8 @@ use InvalidArgumentException;
 use SixtyEightPublishers\HealthCheck\Result\ServiceResult;
 use SixtyEightPublishers\HealthCheck\Result\ResultInterface;
 use SixtyEightPublishers\HealthCheck\Exception\HealthCheckException;
+use function sprintf;
+use function str_replace;
 
 final class PDOServiceChecker implements ServiceCheckerInterface
 {
@@ -21,12 +23,23 @@ final class PDOServiceChecker implements ServiceCheckerInterface
 		private readonly ?string $user = null,
 		private readonly ?string $password = null,
 		private readonly array $options = [],
+		private readonly ?string $table = null,
 		private readonly string $serviceName = 'database',
 	) {
 	}
 
 	/**
-	 * @param array{driver: ?string, host: ?string, port: null|int|string, dbname: ?string, user?: ?string, password?: ?string, options?: ?array<string, mixed>} $params
+	 * @param array{
+	 *     driver?: string,
+	 *     host?: string,
+	 *     port?: int|string,
+	 *     dbname?: string,
+	 *     user?: string|null,
+	 *     password?: string|null,
+	 *     options?: array<string, mixed>|null,
+	 *     table?: string|null,
+	 *     serviceName?: string|null,
+	 * } $params
 	 */
 	public static function fromParams(array $params): self
 	{
@@ -39,17 +52,21 @@ final class PDOServiceChecker implements ServiceCheckerInterface
 			}
 		}
 
+		/** @var array{driver: string, host: string, port: int|string, dbname: string, user?: string|null, password?: string|null, options?: array<string, mixed>|null, table?: string|null, serviceName?: string|null} $params */
+
 		return new self(
-			\sprintf(
+			dsn: sprintf(
 				'%s:host=%s;port=%s;dbname=%s;',
 				$params['driver'],
 				$params['host'],
 				$params['port'],
 				$params['dbname']
 			),
-			$params['user'] ?? null,
-			$params['password'] ?? null,
-			$params['options'] ?? []
+			user:$params['user'] ?? null,
+			password: $params['password'] ?? null,
+			options: $params['options'] ?? [],
+			table: $params['table'] ?? null,
+			serviceName: $params['serviceName'] ?? 'database'
 		);
 	}
 
@@ -61,19 +78,38 @@ final class PDOServiceChecker implements ServiceCheckerInterface
 	public function check(): ResultInterface
 	{
 		try {
-			$pdo = new PDO($this->dsn, $this->user, $this->password, $this->options);
+			$pdo = new PDO(
+				dsn: $this->dsn,
+				username: $this->user,
+				password: $this->password,
+				options: $this->options,
+			);
 
-			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$pdo->setAttribute(attribute: PDO::ATTR_ERRMODE, value: PDO::ERRMODE_EXCEPTION);
+			$detail = [];
 
-			$statement = $pdo->query('SELECT 1;');
-
-			if (false !== $statement) {
-				$statement->execute();
+			if (null !== $this->table) {
+				$table = '"' . str_replace('"', '""', $this->table) . '"';
+				$statement = $pdo->query("SELECT * FROM $table;") ?: null;
+				$detail['rows'] = $statement?->fetchAll(PDO::FETCH_ASSOC) ?? [];
+			} else {
+				$statement = $pdo->query('SELECT 1;') ?: null;
+				$statement?->fetch();
 			}
 
-			return ServiceResult::createOk($this->getName());
+			return ServiceResult::createOk(
+				serviceName: $this->getName(),
+				detail: $detail,
+			);
 		} catch (PDOException $e) {
-			return ServiceResult::createError($this->getName(), 'down', new HealthCheckException($e->getMessage(), $e->getCode(), $e));
+			return ServiceResult::createError(
+				serviceName: $this->getName(),
+				detail: [],
+				error: new HealthCheckException(
+					message: $e->getMessage(),
+					previous: $e,
+				),
+			);
 		}
 	}
 }

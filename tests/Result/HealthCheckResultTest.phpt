@@ -98,47 +98,59 @@ final class HealthCheckResultTest extends TestCase
 		Assert::false($healthCheckResult->isOk());
 	}
 
-	public function testStatusShouldBeOkIfNoServiceResults(): void
+	public function testDetailShouldContainEmptyServicesIfNoServicesDefined(): void
 	{
 		$emptyHealthCheckResult = new HealthCheckResult();
 
-		Assert::same('ok', $emptyHealthCheckResult->getStatus());
+		Assert::equal(
+			[
+				'services' => [],
+			],
+			$emptyHealthCheckResult->getDetail(),
+		);
 	}
 
-	public function testStatusShouldBeOkIfAllServiceResultsAreOk(): void
+	public function testDetailShouldContainServicesIfDefined(): void
 	{
 		$firstServiceResult = Mockery::mock(ResultInterface::class);
 		$secondServiceResult = Mockery::mock(ResultInterface::class);
 
-		$firstServiceResult->shouldReceive('isOk')
+		$firstServiceResult->shouldReceive('toArray')
 			->once()
-			->andReturn(true);
+			->andReturn([
+				'name' => 'a',
+				'is_ok' => true,
+				'detail' => [],
+				'error' => null,
+			]);
 
-		$secondServiceResult->shouldReceive('isOk')
+		$secondServiceResult->shouldReceive('toArray')
 			->once()
-			->andReturn(true);
+			->andReturn([
+				'name' => 'b',
+				'is_ok' => false,
+				'detail' => ['status_code' => 503],
+				'error' => '503 Service unavailable',
+			]);
 
 		$healthCheckResult = new HealthCheckResult([$firstServiceResult, $secondServiceResult]);
 
-		Assert::same('ok', $healthCheckResult->getStatus());
-	}
-
-	public function testResultShouldBeFailedIfAnyServiceResultIsNotOk(): void
-	{
-		$firstServiceResult = Mockery::mock(ResultInterface::class);
-		$secondServiceResult = Mockery::mock(ResultInterface::class);
-
-		$firstServiceResult->shouldReceive('isOk')
-			->once()
-			->andReturn(true);
-
-		$secondServiceResult->shouldReceive('isOk')
-			->once()
-			->andReturn(false);
-
-		$healthCheckResult = new HealthCheckResult([$firstServiceResult, $secondServiceResult]);
-
-		Assert::same('failed', $healthCheckResult->getStatus());
+		Assert::equal([
+			'services' => [
+				[
+					'name' => 'a',
+					'is_ok' => true,
+					'detail' => [],
+					'error' => null,
+				],
+				[
+					'name' => 'b',
+					'is_ok' => false,
+					'detail' => ['status_code' => 503],
+					'error' => '503 Service unavailable',
+				],
+			],
+		], $healthCheckResult->getDetail());
 	}
 
 	public function testErrorShouldBeNullWithoutServiceCheckers(): void
@@ -198,7 +210,6 @@ final class HealthCheckResultTest extends TestCase
 		$emptyHealthCheckResult = new HealthCheckResult();
 
 		Assert::same([
-			'status' => 'ok',
 			'is_ok' => true,
 		], $emptyHealthCheckResult->toArray());
 	}
@@ -208,9 +219,10 @@ final class HealthCheckResultTest extends TestCase
 		$emptyHealthCheckResult = (new HealthCheckResult())->withExportMode(ExportMode::Full);
 
 		Assert::same([
-			'status' => 'ok',
 			'is_ok' => true,
-			'services' => [],
+			'detail' => [
+				'services' => [],
+			],
 		], $emptyHealthCheckResult->toArray());
 	}
 
@@ -220,17 +232,16 @@ final class HealthCheckResultTest extends TestCase
 		$secondServiceResult = Mockery::mock(ResultInterface::class);
 
 		$firstServiceResult->shouldReceive('isOk')
-			->times(2)
+			->once()
 			->andReturn(true);
 
 		$secondServiceResult->shouldReceive('isOk')
-			->times(2)
+			->once()
 			->andReturn(false);
 
 		$healthCheckResult = new HealthCheckResult([$firstServiceResult, $secondServiceResult]);
 
 		Assert::same([
-			'status' => 'failed',
 			'is_ok' => false,
 		], $healthCheckResult->toArray());
 	}
@@ -241,29 +252,50 @@ final class HealthCheckResultTest extends TestCase
 		$secondServiceResult = Mockery::mock(ResultInterface::class);
 
 		$firstServiceResult->shouldReceive('isOk')
-			->times(2)
+			->once()
 			->andReturn(true);
 
 		$firstServiceResult->shouldReceive('toArray')
 			->once()
-			->andReturn(['name' => 'first service']);
+			->andReturn([
+				'name' => 'a',
+				'is_ok' => true,
+				'detail' => [],
+				'error' => null,
+			]);
 
 		$secondServiceResult->shouldReceive('isOk')
-			->times(2)
+			->once()
 			->andReturn(true);
 
 		$secondServiceResult->shouldReceive('toArray')
 			->once()
-			->andReturn(['name' => 'second service']);
+			->andReturn([
+				'name' => 'b',
+				'is_ok' => true,
+				'detail' => ['status_code' => 200],
+				'error' => null,
+			]);
 
 		$healthCheckResult = (new HealthCheckResult([$firstServiceResult, $secondServiceResult]))->withExportMode(ExportMode::Full);
 
 		Assert::same([
-			'status' => 'ok',
 			'is_ok' => true,
-			'services' => [
-				['name' => 'first service'],
-				['name' => 'second service'],
+			'detail' => [
+				'services' => [
+					[
+						'name' => 'a',
+						'is_ok' => true,
+						'detail' => [],
+						'error' => null,
+					],
+					[
+						'name' => 'b',
+						'is_ok' => true,
+						'detail' => ['status_code' => 200],
+						'error' => null,
+					],
+				],
 			],
 		], $healthCheckResult->toArray());
 	}
@@ -272,14 +304,14 @@ final class HealthCheckResultTest extends TestCase
 	{
 		$emptyHealthCheckResult = new HealthCheckResult();
 
-		Assert::same('{"status":"ok","is_ok":true}', json_encode($emptyHealthCheckResult, JSON_THROW_ON_ERROR));
+		Assert::same('{"is_ok":true}', json_encode($emptyHealthCheckResult, JSON_THROW_ON_ERROR));
 	}
 
 	public function testResultInFullExportModeShouldBeConvertedIntoJsonWithoutServiceCheckers(): void
 	{
 		$emptyHealthCheckResult = (new HealthCheckResult())->withExportMode(ExportMode::Full);
 
-		Assert::same('{"status":"ok","is_ok":true,"services":[]}', json_encode($emptyHealthCheckResult, JSON_THROW_ON_ERROR));
+		Assert::same('{"is_ok":true,"detail":{"services":[]}}', json_encode($emptyHealthCheckResult, JSON_THROW_ON_ERROR));
 	}
 
 	public function testResultShouldBeConvertedIntoJsonWithServiceCheckers(): void
@@ -288,16 +320,16 @@ final class HealthCheckResultTest extends TestCase
 		$secondServiceResult = Mockery::mock(ResultInterface::class);
 
 		$firstServiceResult->shouldReceive('isOk')
-			->times(2)
+			->once()
 			->andReturn(true);
 
 		$secondServiceResult->shouldReceive('isOk')
-			->times(2)
+			->once()
 			->andReturn(false);
 
 		$healthCheckResult = new HealthCheckResult([$firstServiceResult, $secondServiceResult]);
 
-		Assert::same('{"status":"failed","is_ok":false}', json_encode($healthCheckResult, JSON_THROW_ON_ERROR));
+		Assert::same('{"is_ok":false}', json_encode($healthCheckResult, JSON_THROW_ON_ERROR));
 	}
 
 	public function testResultInFullExportModeShouldBeConvertedIntoJsonWithServiceCheckers(): void
@@ -306,24 +338,34 @@ final class HealthCheckResultTest extends TestCase
 		$secondServiceResult = Mockery::mock(ResultInterface::class);
 
 		$firstServiceResult->shouldReceive('isOk')
-			->times(2)
+			->once()
 			->andReturn(true);
 
-		$firstServiceResult->shouldReceive('toArray')
+		$firstServiceResult->shouldReceive('jsonSerialize')
 			->once()
-			->andReturn(['name' => 'first service']);
+			->andReturn([
+				'name' => 'a',
+				'is_ok' => true,
+				'detail' => (object) [],
+				'error' => null,
+			]);
 
 		$secondServiceResult->shouldReceive('isOk')
-			->times(2)
+			->once()
 			->andReturn(true);
 
-		$secondServiceResult->shouldReceive('toArray')
+		$secondServiceResult->shouldReceive('jsonSerialize')
 			->once()
-			->andReturn(['name' => 'second service']);
+			->andReturn([
+				'name' => 'b',
+				'is_ok' => true,
+				'detail' => ['status_code' => 200],
+				'error' => null,
+			]);
 
 		$healthCheckResult = (new HealthCheckResult([$firstServiceResult, $secondServiceResult]))->withExportMode(ExportMode::Full);
 
-		Assert::same('{"status":"ok","is_ok":true,"services":[{"name":"first service"},{"name":"second service"}]}', json_encode($healthCheckResult, JSON_THROW_ON_ERROR));
+		Assert::same('{"is_ok":true,"detail":{"services":[{"name":"a","is_ok":true,"detail":{},"error":null},{"name":"b","is_ok":true,"detail":{"status_code":200},"error":null}]}}', json_encode($healthCheckResult, JSON_THROW_ON_ERROR));
 	}
 
 	protected function tearDown(): void

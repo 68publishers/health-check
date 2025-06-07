@@ -16,10 +16,12 @@
 	"require-dev": {
 		"ext-pdo": "*",
 		"ext-redis": "*",
+		"doctrine/dbal": "^3.9 || ^4.2",
 		"friendsofphp/php-cs-fixer": "^3.13",
 		"mockery/mockery": "^1.5",
 		"nette/application": "^3.1.4",
 		"nette/bootstrap": "^3.1",
+		"nette/caching": "^3.3",
 		"nette/di": "^3.0.6",
 		"nette/http": "^3.2",
 		"nette/tester": "^2.4.3",
