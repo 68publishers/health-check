@@ -97,6 +97,18 @@ final class HealthCheckExtension extends CompilerExtension
 		}
 	}
 
+	public function beforeCompile(): void
+	{
+		$builder = $this->getContainerBuilder();
+
+		if ($builder->hasDefinition($this->prefix('health_checker.delegated')) && $builder->hasDefinition('user')) {
+			$definition = $builder->getDefinition('user');
+			assert($definition instanceof ServiceDefinition);
+
+			$definition->addSetup('?->onLoggedIn[] = function () {?->check(null, "ping");}', ['@self', $this->prefix('@health_checker.delegated')]);
+		}
+	}
+
 	private function createExportModeResolverStatement(string|DynamicParameter $exportMode): Statement
 	{
 		# return directly if statement
