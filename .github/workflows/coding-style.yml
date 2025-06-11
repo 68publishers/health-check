@@ -52,4 +52,4 @@ jobs:
         run: vendor/bin/php-cs-fixer fix -v --dry-run
 
       - name: PhpStan
-        run: vendor/bin/phpstan analyse --level 9 src --memory-limit=-1
+        run: vendor/bin/phpstan analyse --memory-limit=-1
