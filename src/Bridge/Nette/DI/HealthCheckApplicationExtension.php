@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace SixtyEightPublishers\HealthCheck\Bridge\Nette\DI;
 
 use RuntimeException;
-use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Nette\Routing\Router;
 use Nette\DI\CompilerExtension;
@@ -14,6 +13,7 @@ use Nette\Application\IPresenterFactory;
 use Nette\DI\Definitions\ServiceDefinition;
 use SixtyEightPublishers\HealthCheck\Bridge\Nette\Application\HealthCheckRoute;
 use SixtyEightPublishers\HealthCheck\Bridge\Nette\Application\HealthCheckPresenter;
+use SixtyEightPublishers\HealthCheck\Bridge\Nette\DI\Config\HealthCheckApplicationConfig;
 use function count;
 use function assert;
 use function sprintf;
@@ -22,9 +22,7 @@ final class HealthCheckApplicationExtension extends CompilerExtension
 {
 	public function getConfigSchema(): Schema
 	{
-		return Expect::structure([
-			'route' => Expect::anyOf(false, Expect::string())->default('/health-check'),
-		])->castTo(HealthCheckApplicationConfig::class);
+		return HealthCheckApplicationConfig::getSchema();
 	}
 
 	public function loadConfiguration(): void
@@ -38,7 +36,7 @@ final class HealthCheckApplicationExtension extends CompilerExtension
 
 		$builder = $this->getContainerBuilder();
 
-		$builder->addDefinition($this->prefix('presenter.health_check'))
+		$builder->addDefinition($this->prefix('presenter.healthCheck'))
 			->setType(HealthCheckPresenter::class);
 	}
 

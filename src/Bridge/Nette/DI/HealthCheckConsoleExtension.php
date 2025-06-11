@@ -23,7 +23,7 @@ final class HealthCheckConsoleExtension extends CompilerExtension
 
 		$builder = $this->getContainerBuilder();
 
-		$builder->addDefinition($this->prefix('command.health_check'))
+		$builder->addDefinition($this->prefix('command.healthCheck'))
 			->setType(HealthCheckCommand::class);
 	}
 }

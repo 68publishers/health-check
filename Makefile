@@ -34,11 +34,11 @@ cs.check:
 
 stan:
 	PHP=81 make composer.update
-	docker exec 68publishers.health-check.81 vendor/bin/phpstan analyse --level 9 src --memory-limit=-1
+	docker exec 68publishers.health-check.81 vendor/bin/phpstan analyse --memory-limit=-1
 
 coverage:
 	PHP=81 make composer.update
-	docker exec 68publishers.health-check.81 vendor/bin/tester -p phpdbg -C -s --coverage ./coverage.xml --coverage-src ./src ./tests
+	docker exec 68publishers.health-check.81 vendor/bin/tester -C -s --coverage ./coverage.xml $(shell find ./src -type f -name '*.php' ! -path './src/Bridge/Omni/*' -exec echo --coverage-src {} \;) ./tests
 
 composer.update:
 ifndef PHP
