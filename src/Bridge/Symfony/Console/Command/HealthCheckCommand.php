@@ -9,6 +9,7 @@ use Symfony\Component\Console\Command\Command;
 use SixtyEightPublishers\HealthCheck\ExportMode;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -24,10 +25,12 @@ use function is_string;
 use function json_encode;
 use function array_filter;
 
+#[AsCommand(
+	name: 'health-check',
+	description: 'Checks statuses of the application services.',
+)]
 final class HealthCheckCommand extends Command
 {
-	protected static $defaultName = 'health-check';
-
 	public function __construct(
 		private readonly HealthCheckerInterface $healthChecker,
 	) {
@@ -36,8 +39,7 @@ final class HealthCheckCommand extends Command
 
 	protected function configure(): void
 	{
-		$this->setDescription('Checks statuses of the application services.')
-			->addArgument('services', InputArgument::OPTIONAL | InputArgument::IS_ARRAY, 'Names of services that will be checked. All services are checked by default.')
+		$this->addArgument('services', InputArgument::OPTIONAL | InputArgument::IS_ARRAY, 'Names of services that will be checked. All services are checked by default.')
 			->addOption('export-mode', null, InputOption::VALUE_REQUIRED, 'Overwrite the default export mode. Allowed values are "simple" and "full"');
 	}
 

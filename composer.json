@@ -28,8 +28,8 @@
 		"phpstan/phpstan": "^1.9",
 		"phpstan/phpstan-nette": "^1.1",
 		"roave/security-advisories": "dev-latest",
-		"symfony/console": "^5.4 || ^6.0",
-		"symfony/dotenv": "^6.2"
+		"symfony/console": "^5.4 || ^6.0 || ^7.0",
+		"symfony/dotenv": "^6.2 || ^7.0"
 	},
 	"suggest": {
 		"nette/di": "For an integration with Nette Framework.",

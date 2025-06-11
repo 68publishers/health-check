@@ -39,7 +39,9 @@ jobs:
         run: composer update --no-progress --prefer-dist --prefer-stable --optimize-autoloader --quiet
 
       - name: Generate the coverage report
-        run: vendor/bin/tester -C -s --coverage ./coverage.xml --coverage-src ./src ./tests
+        run: |
+          COVERAGE_SRC=$(find ./src -type f -name '*.php' ! -path './src/Bridge/Omni/*' -exec echo --coverage-src {} \;)
+          vendor/bin/tester -C -s --coverage ./coverage.xml $COVERAGE_SRC ./tests
 
       - name: Upload the coverage report
         env:
