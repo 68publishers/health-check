@@ -8,8 +8,8 @@ use SixtyEightPublishers\HealthCheck\Result\ServiceResult;
 use SixtyEightPublishers\HealthCheck\Result\ResultInterface;
 use SixtyEightPublishers\HealthCheck\Exception\HealthCheckException;
 use SixtyEightPublishers\HealthCheck\ServiceChecker\ServiceCheckerInterface;
-use SixtyEightPublishers\CoreBundle\Infrastructure\ServiceConnection\ServiceConnectionPoolInterface;
-use SixtyEightPublishers\CoreBundle\Infrastructure\ServiceConnection\UnableToCreateConnectionException;
+use SixtyEightPublishers\CoreBundle\Contract\ServiceConnection\ServiceConnectionPoolInterface;
+use SixtyEightPublishers\CoreBundle\Contract\ServiceConnection\UnableToCreateConnectionException;
 use function sprintf;
 
 final class ServiceConnectionChecker implements ServiceCheckerInterface
