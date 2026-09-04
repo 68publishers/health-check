@@ -11,7 +11,7 @@ use Apitte\Core\Annotation\Controller\Path;
 use Apitte\Core\Annotation\Controller\Method;
 use SixtyEightPublishers\HealthCheck\HealthCheckerInterface;
 
-#[Path('/api/health-check')]
+#[Path('/health-check')]
 final class HealthCheckController implements IController
 {
 	public function __construct(
