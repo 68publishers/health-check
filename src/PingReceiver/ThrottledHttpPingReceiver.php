@@ -23,13 +23,13 @@ final class ThrottledHttpPingReceiver implements PingReceiverInterface
 	 * @param array<string, mixed> $extra
 	 */
 	public function __construct(
-		readonly Storage        $storage,
-		private readonly int    $throttleTtl,
+		private readonly Storage $storage,
+		private readonly int $throttleTtl,
 		private readonly string $cacheKey,
-		string                  $url,
-		string                  $method = 'POST',
-		array                   $headers = [],
-		int                     $timeout = 5,
+		string $url,
+		string $method = 'POST',
+		array $headers = [],
+		int $timeout = 5,
 		string $cacheNamespace = 'ThrottledHttpPingReceiver',
 		array $extra = [],
 	) {
